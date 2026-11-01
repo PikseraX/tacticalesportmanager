@@ -28,7 +28,7 @@ function karistir(d) {
 
 function macOyna(A, B, harita) {
   harita = harita || rastgeleHarita();
-      const fark = takimEtkin(A.oyuncular, A.strateji) - takimEtkin(B.oyuncular, B.strateji) + haritaPuani(A, harita) - haritaPuani(B, harita);
+      const fark = takimEtkin(A.oyuncular, A.strateji) - takimEtkin(B.oyuncular, B.strateji) + + haritaEtkisi(A, B, harita);
 const p = Math.min(0.7, Math.max(0.3, 1 / (1 + Math.exp(-fark / 80))));
   const ist = function (t) {
     return t.oyuncular.map(function (o) { return { o: o, kill: 0, death: 0 }; });
