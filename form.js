@@ -8,7 +8,8 @@ function oyuncuFormEtkisi(o) {
 
 function formEtkisi(oyuncular) {
   if (!oyuncular.length) return 0;
-  return oyuncular.reduce(function (s, o) { return s + oyuncuFormEtkisi(o); }, 0) / oyuncular.length;
+  const t = oyuncular.reduce(function (s, o) { return s + oyuncuFormEtkisi(o); }, 0) / oyuncular.length;
+  return Math.max(-12, t);
 }
 
 // Maç bitince çağrılır (lig ve turnuva)
