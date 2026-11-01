@@ -72,5 +72,5 @@ function personelCikar(tur) {
 }
 
 function analistHazirlik() {
-    return personelSeviye("analist") >= 3 ? 4 : 0;
+  return personelSeviye("analist") >= 3 ? 4 : 0;
 }
