@@ -10,7 +10,7 @@ const TAKTIK_USTUNLUK = { "Agresif": "Dengeli", "Dengeli": "Temkinli", "Temkinli
 const TAKTIK_ROL_BONUSU = 2;
 const TAKTIK_USTUN_BONUSU = 6;
 const SERI_CEZASI = 6;
-const MOLA_BONUSU = 8;
+const MOLA_BONUSU = 12;
 const MOLA_TUR = 6;
 const DEGISIM_HAKKI = 2;
 
