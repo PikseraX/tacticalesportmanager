@@ -49,6 +49,7 @@ function labRolKapat() {
 function labSenaryolar() {
   const H = HARITALAR[0];
   const S = [];
+  const hc = HARITA_ETKI_CARPANI;
   function ekle(grup, ad, teorik, kur, k) {
     S.push({ grup: grup, ad: ad, teorik: teorik, kur: kur, k: k });
   }
@@ -59,13 +60,13 @@ function labSenaryolar() {
       return {};
     }, k);
   });
-  ekle("Harita", "Harita farkı +5", "+5", function () { kariyer.harita[H] = 5; return { harita: H }; });
-  ekle("Harita", "Harita farkı +10", "+10", function () { kariyer.harita[H] = 10; return { harita: H }; });
-  ekle("Harita", "Harita farkı +20 (sen +10, rakip -10)", "+20", function (B) {
+  ekle("Harita", "Harita farkı +5", "+" + (5 * hc), function () { kariyer.harita[H] = 5; return { harita: H }; });
+  ekle("Harita", "Harita farkı +10", "+" + (10 * hc), function () { kariyer.harita[H] = 10; return { harita: H }; });
+  ekle("Harita", "Harita farkı +20 (sen +10, rakip -10)", "+" + (20 * hc), function (B) {
     kariyer.harita[H] = 10; B.harita[H] = -10;
     return { harita: H };
   });
-  ekle("Taktik", "Taktik üstünlüğü (Agresif / Dengeli, kadro uyumu kapalı)", "+6", function () {
+  ekle("Taktik", "Taktik üstünlüğü (Agresif / Dengeli, kadro uyumu kapalı)", "+" + TAKTIK_USTUN_BONUSU, function () {
     return { tA: "Agresif", tB: "Dengeli", temizle: labRolKapat() };
   });
   ekle("Form", "Moral 100 (herkes)", "+3", function () {
@@ -80,7 +81,7 @@ function labSenaryolar() {
     kariyer.oyuncular.forEach(function (o) { o.yor = 100; });
     return {};
   });
-  ekle("Form", "Moral 0 ve yorgunluk 100", "-17", function () {
+  ekle("Form", "Moral 0 ve yorgunluk 100", "-12", function () {
     kariyer.oyuncular.forEach(function (o) { o.mor = 0; o.yor = 100; });
     return {};
   });
@@ -95,18 +96,18 @@ function labSenaryolar() {
     const fark = STRATEJI_UYUM_ETKISI[stratejiUyumu(kariyer.oyuncular, az)] - STRATEJI_UYUM_ETKISI[stratejiUyumu(kariyer.oyuncular, en)];
     return { teorik: etkiYazi(fark) };
   });
-  ekle("Personel", "Analist seviye 3 hazırlık bonusu", "+3", function () {
+  ekle("Personel", "Analist seviye 3 hazırlık bonusu", "?", function () {
     kariyer.personel = { analist: 3 };
-    return {};
+    return { teorik: "+" + analistHazirlik() };
   });
-  ekle("Personel", "Mola (ilk 3 round kaybında kullanılır)", "≈ +0.5", function () { return { mola: true }; });
-  ekle("Birleşik", "Her şey lehine (harita +10, moral 100, analist 3, taktik üstün, mola)", "≈ +22", function () {
+  ekle("Personel", "Mola (ilk 3 round kaybında kullanılır)", "≈ +" + (MOLA_BONUSU * MOLA_TUR / 26).toFixed(1), function () { return { mola: true }; });
+  ekle("Birleşik", "Her şey lehine (harita +10, moral 100, analist 3, taktik üstün, mola)", "≈ +21", function () {
     kariyer.harita[H] = 10;
     kariyer.oyuncular.forEach(function (o) { o.mor = 100; });
     kariyer.personel = { analist: 3 };
     return { harita: H, tA: "Agresif", tB: "Dengeli", mola: true, temizle: labRolKapat() };
   });
-  ekle("Birleşik", "Her şey aleyhine (harita -20, moral 30, yorgunluk 100, taktik zayıf)", "≈ -40", function (B) {
+  ekle("Birleşik", "Her şey aleyhine (harita -20, moral 30, yorgunluk 100, taktik zayıf)", "≈ -30", function (B) {
     kariyer.harita[H] = -10; B.harita[H] = 10;
     kariyer.oyuncular.forEach(function (o) { o.mor = 30; o.yor = 100; });
     return { harita: H, tA: "Dengeli", tB: "Agresif", temizle: labRolKapat() };
