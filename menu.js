@@ -119,6 +119,7 @@ function kulupMenu() {
   if (typeof DENGE_LAB_ACIK !== "undefined" && DENGE_LAB_ACIK) {
     h += '<div class="alt-baslik">Geliştirici</div>';
     h += menuSatiri("Denge Laboratuvarı", "Faktör etkilerini simülasyonla ölç", "dengeEkrani()");
+    h += menuSatiri("Maç İzleme (Prototip)", "Şematik harita, tek round animasyonu", "izleEkrani()");
   }
   hubAc("kulupMenu", "Kulüp", h);
 }
