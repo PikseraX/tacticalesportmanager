@@ -116,6 +116,10 @@ function kulupMenu() {
   let h = menuSatiri("Finans", "Gelir, gider ve sezon özeti", "ekonomiEkrani()");
   h += menuSatiri("Sponsorlar", "Aktif " + sp + "/" + SPONSOR_MAX + " · haftalık +" + para(sponsorHaftalik()), "sponsorEkrani()");
   h += menuSatiri("Kariyer Arşivi", "Geçmiş sezonlar · başarım " + bs + "/" + BASARIMLAR.length, "arsivEkrani()");
+  if (typeof DENGE_LAB_ACIK !== "undefined" && DENGE_LAB_ACIK) {
+    h += '<div class="alt-baslik">Geliştirici</div>';
+    h += menuSatiri("Denge Laboratuvarı", "Faktör etkilerini simülasyonla ölç", "dengeEkrani()");
+  }
   hubAc("kulupMenu", "Kulüp", h);
 }
 
