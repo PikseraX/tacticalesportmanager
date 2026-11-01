@@ -10,8 +10,8 @@ const TAKTIK_USTUNLUK = { "Agresif": "Dengeli", "Dengeli": "Temkinli", "Temkinli
 const TAKTIK_ROL_BONUSU = 2;
 const TAKTIK_USTUN_BONUSU = 6;
 const SERI_CEZASI = 6;
-const MOLA_BONUSU = 5;
-const MOLA_TUR = 4;
+const MOLA_BONUSU = 8;
+const MOLA_TUR = 6;
 const DEGISIM_HAKKI = 2;
 
 let canli = null;
@@ -58,7 +58,7 @@ function canliKur(harita, rakip, seri) {
   const istB = B.oyuncular.map(function (o) { return { o: o, kill: 0, death: 0 }; });
   return {
     harita: harita, A: A, B: B, seri: seri || null,
-    hf: haritaPuani({ oyuncular: kariyer.oyuncular }, harita) - haritaPuani(B, harita),
+    hf: haritaEtkisi({ oyuncular: kariyer.oyuncular }, B, harita),
     sa: 0, sb: 0, istA: istA, istB: istB, aktifA: istA.slice(), aktifB: istB.slice(),
     tA: "Dengeli", tB: aiIlkTaktik(B),
     mola: 1, molaB: 1, molaTur: 0, molaTurB: 0, serA: 0, serB: 0, seriSoruldu: false,
