@@ -198,3 +198,8 @@ function banOyna() {
     canliSeriBasla(kalan, "Yasaklar: sen " + sen + " · rakip " + rk);
   }
 }
+const HARITA_ETKI_CARPANI = 0.6;
+
+function haritaEtkisi(A, B, harita) {
+  return Math.round((haritaPuani(A, harita) - haritaPuani(B, harita)) * HARITA_ETKI_CARPANI * 10) / 10;
+}
