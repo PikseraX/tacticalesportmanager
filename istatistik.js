@@ -6,7 +6,8 @@ function istHazirla(o) {
 function macIstatistikIsle(istA) {
   const no = kariyer.sezon.no;
   istA.forEach(function (x) {
-    const o = x.o;
+    const o = macKaynakOyuncu(x.o);
+    o.sonOynadigiHafta = kariyer.hafta;
     istHazirla(o);
     if (o.ist.sk !== no) { o.ist.sk = no; o.ist.sm = 0; o.ist.sol = 0; o.ist.sod = 0; }
     o.ist.sm++; o.ist.sol += x.kill; o.ist.sod += x.death;

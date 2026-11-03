@@ -1,22 +1,75 @@
-const LIG_SAYISI = 3;
-const LIG_ADLARI = ["1. Lig", "2. Lig", "3. Lig"];
-const LIG_ODUL_CARPANI = [4, 2, 1];
-const LIG_BONUS = [60, 30, 0];
-const YUKSELEN = 2;
+const LIG_SAYISI = 5;
+const LIG_ADLARI = ["1. Lig", "2. Lig", "3. Lig", "4. Lig", "5. Lig"];
+const LIG_HEDEF_GUCU = [85, 75, 65, 55, 45];
+const LIG_ILK_SEZON_GUC_ARALIKLARI = [[80, 90], [70, 80], [60, 70], [50, 60], [40, 50]];
+const LIG_ODUL_CARPANI = [3, 2.5, 2, 1.5, 1];
+const LIG_BONUS = [60, 45, 30, 15, 0];
+const YUKSELEN = 1;
+
+function ligOyuncuGENAyarla(oyuncu, hedef) {
+  for (let deneme = 0; deneme < 3 && oyuncu.genel !== hedef; deneme++) {
+    const fark = hedef - oyuncu.genel;
+    OZELLIKLER.forEach(function (z) { oyuncu[z] = sinirla(oyuncu[z] + fark); });
+    genelHesapla(oyuncu);
+  }
+}
 
 // -1 = senin takımın, diğerleri dunya[] sırası
 function ligTakimlari() {
   return [-1].concat(kariyer.ligler[kariyer.ligNo - 1].filter(function (x) { return x !== -1; }));
 }
 
+function ligIlkSezonDengele(ligler) {
+  ligler.forEach(function (liste, kademe) {
+    const siraliRakipler = liste.filter(function (id) { return id >= 0; });
+    siraliRakipler.forEach(function (id, sira) {
+      const t = dunya[id];
+      const aralik = LIG_ILK_SEZON_GUC_ARALIKLARI[kademe];
+      const oran = siraliRakipler.length > 1 ? sira / (siraliRakipler.length - 1) : 0.5;
+      // Her takımın ortalaması farklı olsun; her oyuncunun GEN'i de kendi
+      // lig kademesinin aralığında kalsın.
+      const hedefGuc = Math.round((aralik[0] + 1) + oran * (aralik[1] - aralik[0] - 2));
+      const kenarPayi = Math.min(hedefGuc - aralik[0], aralik[1] - hedefGuc);
+      const icPay = Math.floor(kenarPayi / 2);
+      const oyuncuFarklari = [-kenarPayi, -icPay, 0, icPay, kenarPayi];
+      t.oyuncular.forEach(function (o, oyuncuSira) {
+        const oyuncuHedefi = hedefGuc + oyuncuFarklari[(oyuncuSira + id) % oyuncuFarklari.length];
+        ligOyuncuGENAyarla(o, oyuncuHedefi);
+      });
+      t.guc = ortGuc(t.oyuncular);
+    });
+  });
+}
+
 function ligHazirla() {
-  if (kariyer.ligler) return;
+  if (kariyer.ligler) {
+    if (kariyer.ligler.length < LIG_SAYISI) {
+      const kullanilan = new Set(kariyer.ligler.flat());
+      const kalan = dunya.map(function (t, i) { return i; }).filter(function (i) { return !kullanilan.has(i); });
+      kalan.sort(function (a, b) { return ortGuc(dunya[b].oyuncular) - ortGuc(dunya[a].oyuncular); });
+      while (kariyer.ligler.length < LIG_SAYISI) {
+        const eksikKademe = LIG_SAYISI - kariyer.ligler.length;
+        kariyer.ligler.push(kalan.splice(-eksikKademe * 8, 8));
+      }
+      kaydet();
+    }
+    // İlk sezonu daha önce başlatmış kayıtları da yeni lig aralıklarına geçir.
+    if (kariyer.sezon && kariyer.sezon.no === 1 && !kariyer.ligIlkSezonDengesi) {
+      ligIlkSezonDengele(kariyer.ligler);
+      kariyer.ligIlkSezonDengesi = true;
+      kaydet();
+    }
+    return;
+  }
   const sirali = dunya.map(function (t, i) { return i; }).sort(function (a, b) {
     return ortGuc(dunya[b].oyuncular) - ortGuc(dunya[a].oyuncular);
   });
   const eskiNo = kariyer.sezon ? kariyer.sezon.no : 1;
-  kariyer.ligler = [sirali.slice(0, 8), sirali.slice(24, 32), [-1].concat(sirali.slice(50, 57))];
-  kariyer.ligNo = 3;
+  kariyer.ligler = [sirali.slice(0, 8), sirali.slice(8, 16), sirali.slice(16, 24), sirali.slice(24, 32), sirali.slice(32, 39)];
+  ligIlkSezonDengele(kariyer.ligler);
+  kariyer.ligIlkSezonDengesi = true;
+  kariyer.ligler[4].push(-1);
+  kariyer.ligNo = 5;
   kariyer.sezon = yeniSezon(eskiNo);
   kaydet();
 }

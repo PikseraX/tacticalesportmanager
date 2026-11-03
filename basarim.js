@@ -21,7 +21,7 @@ const BASARIMLAR = [
   { id: "kusursuz", ad: "Kusursuz Kadro", acik: "İlk 5'teki herkes kendi rolünde 4 yeşil özelliğe sahip olsun.", kos: function () { return kariyer.oyuncular.every(function (o) { return yesilSayisi(o, o.rol) === 4; }); } },
   { id: "personel", ad: "Tam Kadro Personel", acik: "Koç, fizyoterapist ve analisti seviye 3 yap.", kos: function () { return PERSONEL_TURLERI.every(function (t) { return personelSeviye(t) >= 3; }); } },
   { id: "sponsor3", ad: "Marka Değeri", acik: "Aynı anda 3 sponsorun olsun.", kos: function () { return (kariyer.sponsorlar || []).filter(sponsorAktif).length >= 3; } },
-  { id: "aile", ad: "Büyük Aile", acik: "Yedek kadroyu (3) ve akademiyi (4) doldur.", kos: function () { return yedekListe().length >= YEDEK_MAX && (kariyer.akademi || []).length >= AKADEMI_MAX; } }
+  { id: "aile", ad: "Büyük Aile", acik: "Yedek kadroyu ve scout seviyenin izin verdiği akademi kapasitesini doldur.", kos: function () { return (kariyer.scout || 0) > 0 && yedekListe().length >= YEDEK_MAX && (kariyer.akademi || []).length >= akademiKapasitesi(); } }
 ];
 
 // Ana ekran açılırken çağrılır, yeni açılan başarımları işler
@@ -53,7 +53,7 @@ function basarimEkrani() {
   html += '<div class="bilgi-kutusu">Açılan: <b>' + n + " / " + BASARIMLAR.length + "</b></div>";
   BASARIMLAR.forEach(function (b) {
     const a = acik[b.id];
-    const stil = a ? ' style="border-color:#22c55e"' : "";
+    const stil = a ? ' style="border-color:var(--green)"' : "";
     html += '<div class="bilgi-kutusu"' + stil + "><b>" + (a ? "✓ " : "") + b.ad + "</b><br>" + b.acik + (a ? "<br><small>Sezon " + a.sezon + ", hafta " + a.hafta + "</small>" : "") + "</div>";
   });
   uygulama.innerHTML = html;

@@ -1,4 +1,4 @@
-const AKADEMI_MAX = 4;
+function akademiKapasitesi() { return 2 * Math.max(0, Math.min(3, Math.floor(Number(kariyer.scout) || 0))); }
 const AKADEMI_IMZA = 10000;
 const AKADEMI_MAAS = 500;
 const SCOUT_MAAS = 1000;
@@ -9,7 +9,12 @@ function akademiHazirla() {
   let d = false;
   if (!kariyer.akademi) { kariyer.akademi = []; d = true; }
   if (kariyer.scout === undefined) { kariyer.scout = 0; d = true; }
-  if (kariyer.scout >= 1 && !kariyer.adaylar) { adaylariUret(); d = true; }
+  if (!kariyer.adaylar) { kariyer.adaylar = []; d = true; }
+  if (kariyer.scoutAdaySurum !== 2) {
+    // Önceki sürümün görevsiz önerilerini kaldır; imzalanmış akademi oyuncuları korunur.
+    kariyer.adaylar = kariyer.adaylar.filter(o => !!o.bolge);
+    kariyer.scoutAdaySurum = 2; d = true;
+  }
   if (d) kaydet();
 }
 
@@ -17,22 +22,22 @@ function akademiGideri() {
   return (kariyer.akademi || []).length * AKADEMI_MAAS + (kariyer.scout || 0) * SCOUT_MAAS;
 }
 
-function adayUret() {
-  const r = (Math.random() + Math.random()) / 2;
-  const pot = Math.round(55 + r * 40);
+function scoutPotansiyeli(seviye) {
+  const s = Math.max(1, Math.min(3, Number(seviye) || 1));
+  const esikler = [{ elit:.05, iyi:.19 }, { elit:.10, iyi:.33 }, { elit:.15, iyi:.49 }][s-1];
+  const r = Math.random();
+  if (r < esikler.elit) return Math.random() < .1 ? 90 + Math.floor(Math.random()*6) : 80 + Math.floor(Math.random()*10);
+  return r < esikler.iyi ? 65 + Math.floor(Math.random()*15) : 45 + Math.floor(Math.random()*20);
+}
+function adayUret(kullanilan) {
+  const pot = scoutPotansiyeli(kariyer.scout);
   const g = 28 + Math.random() * 12;
-  const o = { ad: yeniAd(), rol: TARZ_LISTESI[Math.floor(Math.random() * TARZ_LISTESI.length)], yas: 16 + Math.floor(Math.random() * 3), pot: pot };
-  OZELLIKLER.forEach(function (z) { o[z] = sinirla(g + Math.random() * 16 - 8); });
-  genelHesapla(o);
+  const o = { ad: yeniAd(kullanilan), rol: TARZ_LISTESI[Math.floor(Math.random() * TARZ_LISTESI.length)], yas: 16 + Math.floor(Math.random() * 3), pot: pot };
+  rolProfiliUret(o,g);
   const w = SCOUT_BELIRSIZLIK[kariyer.scout];
   const lo = Math.max(1, Math.round(pot - Math.random() * w));
   o.tahmin = [lo, Math.min(99, lo + w)];
   return o;
-}
-
-function adaylariUret() {
-  kariyer.adaylar = [];
-  for (let i = 0; i < 2 + kariyer.scout; i++) kariyer.adaylar.push(adayUret());
 }
 
 // Hafta sonunda: akademi gelişimi ve aday yenileme (haftaGec içinden çağrılır)
@@ -45,7 +50,7 @@ function akademiHaftalik(rapor) {
     }
     if (o.genel !== once) rapor.push("Akademi " + o.ad + ": " + once + " → " + o.genel);
   });
-  if ((kariyer.scout || 0) >= 1 && kariyer.hafta % 4 === 1) adaylariUret();
+  scoutGorevHaftalik(rapor);
 }
 
 function tahminYazi(o) {
@@ -56,20 +61,23 @@ function akademiEkrani() {
   akademiHazirla();
   const a = kariyer.akademi;
   let html = '<button class="geri" onclick="kadroEkrani()">← Geri</button><h2>Akademi ve Scout</h2>';
-  html += '<div class="bilgi-kutusu">Bütçe: <b>' + para(kariyer.butce) + "</b><br>Akademi: <b>" + a.length + "/" + AKADEMI_MAX + "</b> (haftalık " + para(a.length * AKADEMI_MAAS) + ")<br>Scout seviyesi: <b>" + (kariyer.scout || "yok") + "</b>" + (kariyer.scout ? " (haftalık " + para(kariyer.scout * SCOUT_MAAS) + ")" : "") + "<br>Yedek kadro: <b>" + yedekListe().length + "/" + YEDEK_MAX + "</b></div>";
+  html += '<div class="bilgi-kutusu">Bütçe: <b>' + para(kariyer.butce) + "</b><br>Akademi: <b>" + a.length + "/" + akademiKapasitesi() + "</b> (haftalık " + para(a.length * AKADEMI_MAAS) + ")<br>Scout seviyesi: <b>" + (kariyer.scout || "yok") + "</b>" + (kariyer.scout ? " (haftalık " + para(kariyer.scout * SCOUT_MAAS) + ")" : "") + "<br>Yedek kadro: <b>" + yedekListe().length + "/" + YEDEK_MAX + "</b></div>";
   if (kariyer.scout < 3) {
     const hedef = kariyer.scout + 1;
     html += '<button class="buton" onclick="scoutYukselt()">' + (kariyer.scout === 0 ? "Scout İşe Al" : "Scout Seviyesini Yükselt (" + hedef + ")") + ": " + para(SCOUT_MALIYET[hedef]) + "</button>";
   }
+  html += '<p>Akademi kapasitesi scout seviyesine göre 2 / 4 / 6 oyuncudur. Her keşif görevi 1–2 aday getirir.</p>';
   html += "<h2>Akademi Oyuncuları</h2>";
   if (a.length === 0) html += "<p>Akademide oyuncu yok.</p>";
   a.forEach(function (o, i) {
     html += '<button class="takim-butonu" onclick="akademiOyuncu(' + i + ')"><span style="text-align:left">' + o.ad + " (" + o.rol + ", " + o.yas + ")<br><small>Potansiyel tahmini: " + tahminYazi(o) + "</small></span><span>GEN " + o.genel + "</span></button>";
   });
-  html += "<h2>Scout Adayları</h2>";
+  html += "<h2>Scout Adayları</h2>" + scoutGorevKutusu();
+  html += '<button class="buton ikincil" onclick="scoutBolgeEkrani()">Scout' + "’" + 'u Bölgeye Gönder</button>';
   if (!kariyer.scout) {
-    html += "<p>Aday görmek için scout işe al. Aday listesi her 4 haftada bir yenilenir.</p>";
+    html += "<p>Aday görmek için scout işe al. Scout’u bir bölgeye göndermeden aday önerilmez.</p>";
   } else {
+    if (!kariyer.adaylar.length) html += "<p>Henüz keşfedilmiş aday yok. Scout’u bir bölgeye gönder.</p>";
     (kariyer.adaylar || []).forEach(function (o, i) {
       html += '<button class="takim-butonu" onclick="adayGoster(' + i + ')"><span style="text-align:left">' + o.ad + " (" + o.rol + ", " + o.yas + ")<br><small>Potansiyel tahmini: " + tahminYazi(o) + "</small></span><span>GEN " + o.genel + "</span></button>";
     });
@@ -86,22 +94,25 @@ function scoutYukselt() {
   kariyer.butce -= m;
   maliIsle("gider", "akademi", m);
   kariyer.scout = hedef;
-  adaylariUret();
   kaydet();
   akademiEkrani();
 }
 
 function adayGoster(i) {
   const o = kariyer.adaylar[i];
+  if (!o) { akademiEkrani(); return; }
   let html = '<button class="geri" onclick="akademiEkrani()">← Geri</button><h2>' + o.ad + "</h2>";
-  html += tabloHtml([o]);
+  html += tabloHtml([o]) + (o.bolge ? '<div class="gelisim-ipucu">Keşif bölgesi: ' + oyunYazisi(o.bolge) + '</div>' : "");
   html += '<div class="bilgi-kutusu">Potansiyel tahmini: <b>' + tahminYazi(o) + "</b><br>İmza ücreti: <b>" + para(AKADEMI_IMZA) + "</b><br>Akademi maaşı: <b>" + para(AKADEMI_MAAS) + "</b>/hafta</div>";
   html += '<button class="buton" onclick="adayAl(' + i + ')">Akademiye Al</button>';
   uygulama.innerHTML = html;
 }
 
 function adayAl(i) {
-  if (kariyer.akademi.length >= AKADEMI_MAX) { alert("Akademi dolu. Önce birini yükselt veya serbest bırak."); return; }
+  akademiHazirla();
+  const aday = kariyer.adaylar[i];
+  if (!aday || !aday.bolge) return;
+  if (kariyer.akademi.length >= akademiKapasitesi()) { alert("Akademi dolu. Önce birini yükselt veya serbest bırak."); return; }
   if (kariyer.butce - AKADEMI_IMZA < 0) { alert("Bütçen yetersiz."); return; }
   const o = kariyer.adaylar[i];
   if (!confirm(o.ad + " akademiye alınacak: " + para(AKADEMI_IMZA) + ". Onaylıyor musun?")) return;
@@ -131,6 +142,8 @@ function akademiYukselt(i) {
   o.bitis = (kariyer.hafta || 1) + 30;
   delete o.tahmin;
   yedekListe().push(o);
+  kulupGelisimHazirla();
+  if(kariyer.sezonHedefi.id === "akademi" && !kariyer.sezonHedefi.sonuclandi) kariyer.sezonHedefi.akademi++;
   kaydet();
   akademiEkrani();
 }

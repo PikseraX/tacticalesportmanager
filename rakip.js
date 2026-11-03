@@ -20,6 +20,7 @@ function kullanilanAdlar() {
   });
   kariyer.oyuncular.forEach(function (o) { s.add(o.ad); });
   if (kariyer.serbest) kariyer.serbest.forEach(function (o) { s.add(o.ad); });
+  [kariyer.yedekler,kariyer.akademi,kariyer.adaylar].forEach(l => (l || []).forEach(o => s.add(o.ad)));
   return s;
 }
 
@@ -29,13 +30,30 @@ function benzersizAd(kullanilan) {
     const ad = rastgeleEleman(HECE_1) + rastgeleEleman(HECE_2);
     if (!kullanilan.has(ad)) { kullanilan.add(ad); return ad; }
   }
-  const ad = rastgeleEleman(HECE_1) + rastgeleEleman(HECE_2) + Math.floor(Math.random() * 90 + 10);
+  const kok = rastgeleEleman(HECE_1) + rastgeleEleman(HECE_2);
+  let ek = 10;
+  while (kullanilan.has(kok + ek)) ek++;
+  const ad = kok + ek;
   kullanilan.add(ad);
   return ad;
 }
 
-function yeniAd() {
-  return benzersizAd(kullanilanAdlar());
+function yeniAd(kullanilan) {
+  return benzersizAd(kullanilan || kullanilanAdlar());
+}
+
+function oyuncuIsimleriniDuzelt() {
+  const kullanilan = new Set(dunya.map(t=>t.ad));
+  const gorulen = new Set();
+  const listeler = [kariyer.oyuncular,kariyer.yedekler,kariyer.akademi,kariyer.serbest,kariyer.adaylar].concat(dunya.map(t=>t.oyuncular));
+  let degisti = false;
+  listeler.forEach(l => (l || []).forEach(o => {
+    if (gorulen.has(o)) return;
+    gorulen.add(o);
+    if (!o.ad || kullanilan.has(o.ad)) { o.ad = benzersizAd(kullanilan); degisti = true; }
+    else kullanilan.add(o.ad);
+  }));
+  if (degisti) kaydet();
 }
 
 function takimOrt(t) {
@@ -54,8 +72,7 @@ function rakipOyuncuGelistir(o, odak) {
 
 function rakipOyuncuUret(ad, rol, g) {
   const o = { ad: ad, rol: rol, yas: 17 + Math.floor(Math.random() * 11) };
-  OZELLIKLER.forEach(function (z) { o[z] = sinirla(g + (Math.random() * 20 - 10)); });
-  genelHesapla(o);
+  rolProfiliUret(o,g);
   return o;
 }
 

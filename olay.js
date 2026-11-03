@@ -67,6 +67,7 @@ function basinCevap(i) {
   const b = kariyer.basin;
   const s = (b.kazandi ? BASIN_GALIBIYET : BASIN_MAGLUBIYET)[b.soru].sec[i];
   itibarDegis(s.itibar);
+  taraftarDegis(s.itibar, "Basın açıklaması: " + s.ad);
   takimMoralDegis(s.moral);
   b.yapildi = true;
   kaydet();

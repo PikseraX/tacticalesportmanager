@@ -4,6 +4,8 @@ function etiketler(liste) { return '<div class="etiketler">' + liste.join("") + 
 
 // s1 ve s2 null ise ortada VS yazar. bitti ise kazanan yeşil, kaybeden kırmızı olur.
 function skorTahtasi(ad1, ad2, s1, s2, bitti, alt1, alt2) {
+  const durum = s1 === null ? "MAÇ ÖNCESİ" : (bitti ? "MAÇ SONU" : "CANLI · YARI DEVRE");
+  const durumSinif = s1 === null ? "hazir" : (bitti ? (s1 > s2 ? "galibiyet" : "maglubiyet") : "canli");
   let orta;
   if (s1 === null) {
     orta = '<div class="sayi vs">VS</div>';
@@ -12,7 +14,7 @@ function skorTahtasi(ad1, ad2, s1, s2, bitti, alt1, alt2) {
     const k2 = bitti ? (s2 > s1 ? "kaz" : "kay") : "";
     orta = '<div class="sayi"><span class="' + k1 + '">' + s1 + '</span> : <span class="' + k2 + '">' + s2 + "</span></div>";
   }
-  return '<div class="skor"><div class="takim" style="color:' + kariyer.renk + '">' + ad1 + (alt1 ? "<small>" + alt1 + "</small>" : "") + "</div>" + orta + '<div class="takim">' + ad2 + (alt2 ? "<small>" + alt2 + "</small>" : "") + "</div></div>";
+  return '<div class="mac-skor-panel"><div class="mac-panel-ust"><span>ESPORTS · KARŞILAŞMA</span><b class="mac-durum ' + durumSinif + '">' + durum + '</b></div><div class="skor"><div class="takim" style="color:' + kariyer.renk + '">' + ad1 + (alt1 ? "<small>" + alt1 + "</small>" : "") + "</div>" + orta + '<div class="takim">' + ad2 + (alt2 ? "<small>" + alt2 + "</small>" : "") + "</div></div></div>";
 }
 
 function olayListesi(not) {
@@ -30,7 +32,7 @@ function istTablo(ad, ist) {
   ist.forEach(function (x) {
     const kd = x.death === 0 ? x.kill : x.kill / x.death;
     const kdYazi = x.death === 0 ? String(x.kill) : kd.toFixed(2);
-    const renk = kd >= 1.2 ? "#22c55e" : (kd < 0.8 ? "#ef4444" : "#f9fafb");
+    const renk = kd >= 1.2 ? "var(--green)" : (kd < 0.8 ? "var(--red)" : "var(--text)");
     h += "<tr><td>" + (x === en && x.kill > 0 ? "⭐ " : "") + x.o.ad + '<br><small style="color:#9ca3af">' + x.o.rol + "</small></td><td>" + x.kill + "</td><td>" + x.death + '</td><td style="color:' + renk + ';font-weight:bold">' + kdYazi + "</td></tr>";
   });
   return h + "</table></div>";
@@ -48,6 +50,7 @@ function banEkrani() {
   const toplamBan = HARITALAR.length - d.hedef;
   let html = '<button class="geri" onclick="' + d.geri + '">← Geri</button><h2>Harita Yasaklama</h2>';
   html += skorTahtasi(kariyer.takimAdi, d.rakip.ad, null, null, false, "Güç " + guc(kariyer.oyuncular), "Güç " + guc(d.rakip.oyuncular) + (an >= 1 && d.rakip.strateji ? " · " + d.rakip.strateji : ""));
+  html += rakipAnalizHtml(d.rakip);
   const e = [etiket(d.mod === "lig" ? "Lig maçı · 1 harita" : "Turnuva · BO3, 3 harita", "sari"), etiket("Yasak " + d.banlar.length + "/" + toplamBan)];
   if (an >= 1) {
     let en = HARITALAR[0];
@@ -119,6 +122,8 @@ function seriKutusu(seri) {
 
 function canliHazirlikEkrani() {
   const c = canli;
+  c.macEkrani = "hazirlik";
+  kaydet();
   const an = personelSeviye("analist");
   let html = '<button class="geri" onclick="canliIptal()">← Geri</button><h2>Maç Öncesi</h2>';
   if (c.seri) html += seriKutusu(c.seri);
@@ -133,6 +138,10 @@ function canliHazirlikEkrani() {
   if (an >= 2) e.push(etiket("Harita farkı " + etkiYazi(c.hf), c.hf > 0 ? "yesil" : (c.hf < 0 ? "kirmizi" : "")));
   if (an >= 3) e.push(etiket("Hazırlık +" + analistHazirlik(), "yesil"));
   html += etiketler(e);
+  html += rakipAnalizHtml(c.B);
+  html += rekabetHtml(c.B);
+  html += hazirlikPlanHtml(c);
+  html += hizliMacSecimHtml(c);
   html += "<p>İlk yarı taktiğini seç." + (an >= 1 ? " Net değer, kadro uyumu ile rakibin taktiğine karşı üstünlüğün toplamıdır." : " Rakibin taktiğini bilmediğin için yalnızca kadro uyumunu görürsün.") + "</p>";
   html += taktikButonlari("canliBasla", an >= 1, c.tB);
   uygulama.innerHTML = html;
@@ -140,6 +149,8 @@ function canliHazirlikEkrani() {
 
 function yariEkrani() {
   const c = canli;
+  c.macEkrani = "devre";
+  kaydet();
   const an = personelSeviye("analist");
   const tahmin = aiYariTaktik(c);
   const rakipT = an >= 3 ? tahmin : c.tB;
@@ -147,6 +158,8 @@ function yariEkrani() {
   if (c.seri) html += seriKutusu(c.seri);
   html += skorTahtasi(c.A.ad, c.B.ad, c.sa, c.sb, false, "Taktik: " + c.tA, "Taktik: " + c.tB);
   html += etiketler([etiket("Harita: " + c.harita, "sari"), etiket("Mola: " + c.mola), etiket("Değişiklik: " + c.degisimHak)]);
+  if(c.macModu==="hizli") html += '<div class="gelisim-ipucu">Hızlı maç devre arasında durdu. Taktiğini seçtiğinde ikinci yarı simüle edilecek.</div>';
+  if(c.mola>0 && !c.devreMolasiKullanildi) html += '<button class="buton ikincil" onclick="hizliMacDevreMolasi()">Devre Arası Takım Molası ('+c.mola+')</button>';
   if (an >= 3) {
     html += '<div class="ipucu">Analist: rakip ikinci yarıda <b>' + tahmin + "</b> oynayacak" + (tahmin !== c.tB ? " (taktik değiştiriyor)." : " (taktik değişmiyor).") + "</div>";
   } else {
@@ -155,7 +168,7 @@ function yariEkrani() {
   if (c.degisimHak > 0 && yedekListe().length > 0) {
     html += '<button class="buton ikincil" onclick="degisimEkrani()">Oyuncu Değişikliği</button>';
   }
-  html += "<h2>İkinci Yarı Taktiği</h2>" + taktikButonlari("canliYariDevam", true, rakipT);
+  html += "<h2>İkinci Yarı Taktiği</h2>" + taktikButonlari("canliYariDevam", an >= 3, rakipT);
   html += istTablo(c.A.ad, c.aktifA) + istTablo(c.B.ad, c.aktifB);
   uygulama.innerHTML = html;
 }
@@ -176,19 +189,28 @@ function canliSeriIsle(seri, s) {
   const kaz = s.sa > s.sb;
   if (kaz) seri.mine++; else seri.theirs++;
   seri.hr.push({ h: s.harita, m: s.sa, t: s.sb });
+  seri.istatistik = seri.istatistik || [];
+  s.istA.forEach(x => {
+    const id = x.o.macKaynakId || x.o.kimlik;
+    let kayit = seri.istatistik.find(y => (y.o.macKaynakId || y.o.kimlik) === id);
+    if (!kayit) { kayit = {o:x.o,kill:0,death:0}; seri.istatistik.push(kayit); }
+    kayit.kill += x.kill; kayit.death += x.death;
+  });
   seri.notlar.push(s.harita + ": " + s.not);
   seri.idx++;
   if (seri.mine >= 2 || seri.theirs >= 2) {
-    const sonuc = { mine: seri.mine, theirs: seri.theirs, hr: seri.hr, not: seri.notlar.join("<br>") };
+    const sonuc = { mine: seri.mine, theirs: seri.theirs, hr: seri.hr, istA: seri.istatistik, not: seri.notlar.join("<br>") };
     canliSeri = null;
     turnuvaTurOyna(seri.kalan, seri.banYazi, sonuc);
     return;
   }
   let html = "<h2>Harita Bitti</h2>";
   html += skorTahtasi(seri.A.ad, seri.rakip.ad, s.sa, s.sb, true, kaz ? "Haritayı kazandın" : "Haritayı kaybettin", s.harita);
+  html += macDegerlendirmeHtml(s.analiz,false);
   html += seriKutusu(seri);
   html += '<button class="buton" onclick="canliSeriSonraki()">Sonraki Harita: ' + seri.liste[seri.idx] + "</button>";
   uygulama.innerHTML = html;
+  kaydet();
 }
 
 // ---------- Maç raporları ----------
@@ -197,20 +219,25 @@ function sezonMacRaporu(B, s, odul, digerleri) {
   let html = "<h2>Maç Raporu</h2>";
   html += skorTahtasi(kariyer.takimAdi, B.ad, s.sa, s.sb, true, kazandi ? "Galibiyet" : "Mağlubiyet", "Güç " + guc(B.oyuncular));
   const e = [etiket("Harita: " + s.harita, "sari"), etiket("Kazanç +" + para(odul), "yesil")];
+  if(s.hazirlikPlan && MAC_HAZIRLIK_PLANLARI[s.hazirlikPlan])e.push(etiket("Plan: " + MAC_HAZIRLIK_PLANLARI[s.hazirlikPlan].ad));
   if (s.uzatma) e.push(etiket("Uzatma", "sari"));
   html += etiketler(e);
   if (basinBekliyor()) html += '<button class="buton" onclick="basinEkrani()">Basın Toplantısı</button>';
   html += '<button class="buton ikincil" onclick="kariyerEkrani()">Kariyere Dön</button>';
   html += '<button class="buton ikincil" onclick="tabloEkrani()">Puan Tablosu</button>';
+  html += macDegerlendirmeHtml(s.analiz);
+  html += rekabetHtml(B);
   html += olayListesi(s.not);
   html += istTablo(kariyer.takimAdi, s.istA) + istTablo(B.ad, s.istB);
   html += "<h2>Haftanın Diğer Maçları</h2>";
   digerleri.forEach(function (d) { html += '<div class="mac-satir">' + d + "</div>"; });
   uygulama.innerHTML = html;
+  reklamMacTamamlandi();
 }
 
 function turnuvaRaporu(T, rapor, sonuc) {
   let html = "<h2>" + T.ad + "</h2>";
+  html += macDegerlendirmeHtml(kariyer.sonMacDegerlendirme);
   if (sonuc) {
     html += '<div class="hero"><h1 style="color:' + kariyer.renk + '">' + sonuc.yerYazi + '</h1><div class="alt">Şampiyon: ' + sonuc.sampiyon + "</div>";
     html += '<div class="metrikler">' + metrik("+" + para(sonuc.odul), "Ödül") + metrik("+" + sonuc.puan, "Sıralama puanı") + "</div></div>";
@@ -225,4 +252,5 @@ function turnuvaRaporu(T, rapor, sonuc) {
     r.satirlar.forEach(function (x) { html += '<div class="mac-satir' + (x.indexOf("<b>") === 0 ? " benim" : "") + '">' + x + "</div>"; });
   });
   uygulama.innerHTML = html;
+  reklamMacTamamlandi();
 }

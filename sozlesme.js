@@ -54,7 +54,7 @@ function sozlesmeKontrol(rapor) {
     kariyer.serbest.push(o);
     rapor.push("Sözleşmesi bitti, ayrıldı: " + o.ad + " (GEN " + o.genel + ")");
   });
-  while (kariyer.serbest.length > 12) kariyer.serbest.shift();
+  serbestDoldur();
   kadroTamamla(rapor, gidenler);
 }
 
@@ -113,6 +113,7 @@ function teklifKabul(i) {
   const o = t && teklifOyuncu(t);
   if (!o) { teklifEkrani(); return; }
   if (!confirm(o.ad + " " + t.kulup + " takımına satılacak: +" + para(t.fiyat) + ". Kadro eksik kalırsa yedekten ya da piyasadan en ucuz oyuncu otomatik alınır. Onaylıyor musun?")) return;
+  taraftarTransfer(null, o);
   kariyer.butce += t.fiyat;
   maliIsle("gelir", "transfer", t.fiyat);
   const k = kariyer.oyuncular.indexOf(o);

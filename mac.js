@@ -105,4 +105,5 @@ function macRaporu(A, B, s, odul) {
   html += '<button class="buton" onclick="macRakipSec()">Başka Maç</button>';
   html += '<button class="buton ikincil" onclick="kariyerEkrani()">Kariyere Dön</button>';
   uygulama.innerHTML = html;
+  reklamMacTamamlandi();
 }

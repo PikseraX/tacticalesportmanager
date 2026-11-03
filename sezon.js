@@ -1,5 +1,5 @@
 const LIG_TAKIM_SAYISI = 8;
-const SEZON_ODULLERI = [150000, 100000, 60000, 30000, 15000, 10000, 5000, 5000];
+const SEZON_ODULLERI = [100000, 70000, 45000, 25000, 12000, 8000, 4000, 4000];
 
 // 0 = senin takımın, 1-7 = sezon.takimlar listesindeki rakipler
 function ligTakim(i) {
@@ -58,23 +58,30 @@ function sonucIsle(a, b, s) {
 function sezonKutusu() {
   sezonHazirla();
   const sz = kariyer.sezon;
-  let h = '<div class="bilgi-kutusu">Sezon ' + sz.no + " · " + LIG_ADLARI[kariyer.ligNo - 1] + " · ";
+  const toplamHafta = sz.fikstur.length * 2;
+  const ilerleme = Math.max(0, Math.min(100, Math.round(sz.hf / toplamHafta * 100)));
+  let h = '<section class="sezon-kart"><div class="sezon-kart-baslik"><div><small>SEZON ' + sz.no + '</small><b>' + LIG_ADLARI[kariyer.ligNo - 1] + '</b></div>';
   if (sz.bitti) {
-    h += "Bitti<br>Sıralaman: <b>" + (siralama().indexOf(0) + 1) + ".</b></div>";
+    const sira = siralama().indexOf(0) + 1;
+    h += '<span class="sezon-rozet tamamlandi">TAMAMLANDI</span></div><div class="sezon-kapanis"><small>SEZON SIRALAMAN</small><strong>' + sira + '.</strong><span>Lig sezonu tamamlandı</span></div><div class="sezon-ilerleme"><i style="width:100%"></i></div></section>';
     h += '<button class="buton" onclick="sezonuKapat()">Ödülü Al, Yeni Sezonu Başlat</button>';
-  } else if (sz.hf % 2 === 0) {
+  } else {
+    const ligHaftasi = sz.hf % 2 === 0;
+    const faz = ligHaftasi ? "LİG HAFTASI" : "TURNUVA HAFTASI";
+    h += '<span class="sezon-rozet' + (ligHaftasi ? ' lig' : ' turnuva') + '">' + faz + '</span></div>';
+    h += '<div class="sezon-ozet"><div class="sezon-hafta"><small>TAKVİM</small><strong>' + String(sz.hf + 1).padStart(2, "0") + '<span> / ' + toplamHafta + '</span></strong></div>';
+    h += '<div class="sezon-program"><small>BU HAFTAKİ PROGRAM</small><b>' + (ligHaftasi ? "Lig maçı" : "Turnuva") + '</b><span>' + (ligHaftasi ? "Maç " + (sz.gun + 1) + " / " + sz.fikstur.length : "Lig haftaları arasında") + '</span></div></div>';
+    h += '<div class="sezon-ilerleme"><i style="width:' + ilerleme + '%"></i></div>';
+    if (ligHaftasi) {
     const m = sz.fikstur[sz.gun].find(function (x) { return x[0] === 0 || x[1] === 0; });
     const rakip = ligTakim(m[0] === 0 ? m[1] : m[0]);
-    h += "Hafta " + (sz.hf + 1) + "/" + (sz.fikstur.length * 2);
-    h += "<br><b>LİG HAFTASI</b> (maç " + (sz.gun + 1) + "/" + sz.fikstur.length + ")";
-    h += "<br>Rakip: <b>" + rakip.ad + "</b> (Güç " + Math.round(ortGuc(rakip.oyuncular)) + ")";
-    if (sz.oynandi) h += "<br>Bu haftanın maçı oynandı.";
-    h += "</div>";
-    if (!sz.oynandi) { h += '<button class="buton" onclick="hazirlikEkrani()">Maçı Oyna</button>'; }
-    else { h += '<button class="buton" onclick="haftaGec()">Haftayı Bitir</button>'; }
-  } else {
-    h += "Hafta " + (sz.hf + 1) + "/" + (sz.fikstur.length * 2) + "<br><b>TURNUVA HAFTASI</b>";
-    h += turnuvaHaftaKutusu();
+      h += '<div class="sezon-rakip"><div><small>SIRADAKİ RAKİP</small><b>' + rakip.ad + '</b></div><span>GÜÇ <strong>' + Math.round(ortGuc(rakip.oyuncular)) + '</strong></span></div>';
+      if (sz.oynandi) h += '<div class="sezon-mesaj tamamlandi">Lig maçı oynandı · puan tablosu güncel</div>';
+      h += '<button class="buton sezon-ana-aksiyon" onclick="' + (sz.oynandi ? 'haftaGec()' : 'hazirlikEkrani()') + '">' + (sz.oynandi ? 'Haftayı Bitir' : 'Maç Hazırlığına Geç') + '</button>';
+    } else {
+      h += turnuvaHaftaKutusu();
+    }
+    h += '</section>';
   }
   h += '<button class="buton ikincil" onclick="tabloEkrani()">Puan Tablosu</button>';
   return h;
@@ -106,6 +113,9 @@ function sezonMaciBitir(s) {
   sz.oynandi = true;
   moralMacSonucu(kazandi);
   macIstatistikIsle(s.istA);
+  kulupMacKaydet(rakip,s,false);
+  rekabetSonucKaydet(rakip,s,false,"lig:"+sz.no+":"+sz.gun);
+  kariyer.sonMacDegerlendirme=s.analiz || null;
   basinHazirla(kazandi);
   kaydet();
   sezonMacRaporu(rakip, s, odul, digerleri);
@@ -120,6 +130,7 @@ function sezonMacRaporu(B, s, odul, digerleri) {
   html += "<br>Harita: <b>" + s.harita + "</b>";
   if (s.not) html += "<br>" + s.not;
   html += "<br>Kazanç: <b>+" + para(odul) + "</b></div>";
+  html += macDegerlendirmeHtml(s.analiz);
   html += "<h2>Haftanın Diğer Maçları</h2>";
   digerleri.forEach(function (d) { html += "<p>" + d + "</p>"; });
   html += istTablo(kariyer.takimAdi, s.istA) + istTablo(B.ad, s.istB);
@@ -127,6 +138,7 @@ function sezonMacRaporu(B, s, odul, digerleri) {
   html += '<button class="buton" onclick="tabloEkrani()">Puan Tablosu</button>';
   html += '<button class="buton ikincil" onclick="kariyerEkrani()">Kariyere Dön</button>';
   uygulama.innerHTML = html;
+  reklamMacTamamlandi();
 }
 
 function tabloEkrani() {
@@ -134,7 +146,7 @@ function tabloEkrani() {
   const sz = kariyer.sezon;
   const t = sz.tablo;
   let html = '<button class="geri" onclick="kariyerEkrani()">← Geri</button><h2>' + LIG_ADLARI[kariyer.ligNo - 1] + " · Sezon " + sz.no + "</h2>";
-  html += "<p>İlk " + YUKSELEN + " yükselir, son " + YUKSELEN + " düşer (1. Lig'de yükselme, 3. Lig'de düşme yok). Kadro görmek için takıma bas.</p>";
+  html += "<p>İlk " + YUKSELEN + " yükselir, son " + YUKSELEN + " düşer (1. Lig'de yükselme, 5. Lig'de düşme yok). Kadro görmek için takıma bas.</p>";
   html += '<div class="tablo-kutusu"><table><tr><th>Takım</th><th>O</th><th>G</th><th>M</th><th>RF</th><th>P</th></tr>';
   siralama().forEach(function (i, sira) {
     const stil = i === 0 ? ' style="color:' + kariyer.renk + ';font-weight:bold"' : "";
@@ -151,6 +163,7 @@ function sezonuKapat() {
   const ligSirasi = siralama();
   const sira = ligSirasi.indexOf(0);
   const odul = Math.round(SEZON_ODULLERI[sira] * LIG_ODUL_CARPANI[kariyer.ligNo - 1]);
+  sezonHedefSonuclandir(sira+1);
   kariyer.butce += odul;
   maliIsle("gelir", "sezon", odul);
   sponsorSezonSonu(sira + 1);
@@ -163,6 +176,7 @@ function sezonuKapat() {
   sponsorTeklifYenile();
   teklifUret();
   kariyer.sezon = yeniSezon(sz.no + 1);
+  kulupGelisimHazirla();
   const r = rakipSezonSonu();
   kaydet();
   sezonSonuEkrani(sz.no, sira + 1, odul, r, sonuc);

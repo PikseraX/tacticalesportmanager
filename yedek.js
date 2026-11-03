@@ -1,4 +1,4 @@
-const YEDEK_MAX = 3;
+const YEDEK_MAX = 8;
 const YEDEK_MAAS_ORANI = 0.5;
 
 function yedekListe() {
@@ -49,6 +49,7 @@ function yedekSat(i) {
   const y = yedekListe();
   const o = y[i];
   if (!confirm(o.ad + " satılacak: +" + para(satisFiyati(o)) + ". Onaylıyor musun?")) return;
+  taraftarTransfer(null, o);
   kariyer.butce += satisFiyati(o);
   maliIsle("gelir", "transfer", satisFiyati(o));
   y.splice(i, 1);

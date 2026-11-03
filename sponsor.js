@@ -1,4 +1,5 @@
 const SPONSOR_MAX = 3;
+const SPONSOR_TEKLIF_SAYISI = 6;
 const SPONSOR_IPTAL_HAFTA = 4;
 const SPONSOR_MARKA = ["Kelvix", "Zorax", "Vorlux", "Nexor", "Drako", "Mirex", "Tavox", "Brixo", "Qualen", "Syrex"];
 const SPONSOR_SEKTOR = ["Enerji", "Bilişim", "Gıda", "Mobil", "Giyim", "Oyun", "Finans", "Ulaşım"];
@@ -13,7 +14,15 @@ function sponsorHaftalik() {
 }
 
 function sponsorTemizle() {
-  kariyer.sponsorlar = (kariyer.sponsorlar || []).filter(sponsorAktif);
+  const no = kariyer.sezon && kariyer.sezon.no;
+  kariyer.sponsorBekleyen = kariyer.sponsorBekleyen || [];
+  kariyer.sponsorlar = (kariyer.sponsorlar || []).filter(s => {
+    if (sponsorAktif(s)) return true;
+    if (kariyer.sezon && kariyer.sezon.bitti && s.bitis >= kariyer.hafta-1 && s.bonusDegerlendirilenSezon !== no) {
+      s.bekleyenSezon = no; kariyer.sponsorBekleyen.push(s);
+    }
+    return false;
+  });
 }
 
 function hedefYazi(h) {
@@ -30,7 +39,7 @@ function sponsorTeklifUret(kullanilan) {
   const sure = Math.random() < 0.5 ? 28 : 56;
   let haftalik = a[0] + Math.random() * (a[1] - a[0]);
   if (sure === 56) haftalik *= 1.1;
-  haftalik = Math.round(haftalik / 100) * 100;
+  haftalik = Math.round(haftalik * taraftarSponsorCarpani() / 100) * 100;
   let hedef, carpan;
   if (Math.random() < 0.5) {
     const k = [2, 3, 4, 5][Math.floor(Math.random() * 4)];
@@ -46,13 +55,18 @@ function sponsorTeklifUret(kullanilan) {
 
 function sponsorTeklifYenile() {
   const k = [];
-  kariyer.sponsorTeklif = [sponsorTeklifUret(k), sponsorTeklifUret(k), sponsorTeklifUret(k)];
+  kariyer.sponsorTeklif = Array.from({ length: SPONSOR_TEKLIF_SAYISI }, function () { return sponsorTeklifUret(k); });
   kaydet();
 }
 
 function sponsorHazirla() {
   if (!kariyer.sponsorlar) kariyer.sponsorlar = [];
   if (!kariyer.sponsorTeklif) sponsorTeklifYenile();
+  else if (kariyer.sponsorTeklif.length < SPONSOR_TEKLIF_SAYISI) {
+    const kullanilan = kariyer.sponsorTeklif.map(function (t) { return t.ad; });
+    while (kariyer.sponsorTeklif.length < SPONSOR_TEKLIF_SAYISI) kariyer.sponsorTeklif.push(sponsorTeklifUret(kullanilan));
+    kaydet();
+  }
 }
 
 function sponsorEkrani() {
@@ -70,11 +84,19 @@ function sponsorEkrani() {
   });
   if (kariyer.sponsorlar.length > 0) html += "<p>Anlaşmayı erken bitirmek için üstüne bas (" + SPONSOR_IPTAL_HAFTA + " haftalık ücret cezası).</p>";
   html += "<h2>Gelen Teklifler</h2>";
-  if (kariyer.sponsorTeklif.length === 0) html += "<p>Bu sezonluk teklif kalmadı. Yeni teklifler sezon başında gelir.</p>";
+  html += "<p>İçlerinden istediğin anlaşmaları imzala; tekliflerin hepsini kabul etmen gerekmez.</p>";
+  if (kariyer.sponsorTeklif.length === 0) html += "<p>Bu sezonluk teklifler değerlendirildi. Yenileri sezon başında gelir.</p>";
   kariyer.sponsorTeklif.forEach(function (t, i) {
-    html += '<button class="takim-butonu" onclick="sponsorImzala(' + i + ')"><span style="text-align:left">' + t.ad + "<br><small>Süre: " + t.sure + " hafta · Hedef: " + hedefYazi(t.hedef) + "<br>Bonus: " + para(t.bonus) + " · İmza primi: " + para(t.haftalik * 2) + '</small></span><span>' + para(t.haftalik) + "/hf</span></button>";
+    html += `<div class="sponsor-teklif"><button class="takim-butonu" onclick="sponsorImzala(${i})"><span style="text-align:left">${t.ad}<br><small>Süre: ${t.sure} hafta · Hedef: ${hedefYazi(t.hedef)}<br>Bonus: ${para(t.bonus)} · İmza primi: ${para(t.haftalik * 2)}</small></span><span>${para(t.haftalik)}/hf</span></button><button class="sponsor-reddet" onclick="sponsorReddet(${i})">Teklifi reddet</button></div>`;
   });
   uygulama.innerHTML = html;
+}
+
+function sponsorReddet(i) {
+  if (!kariyer.sponsorTeklif || !kariyer.sponsorTeklif[i]) return;
+  kariyer.sponsorTeklif.splice(i, 1);
+  kaydet();
+  sponsorEkrani();
 }
 
 function sponsorImzala(i) {
@@ -114,8 +136,10 @@ function sponsorSezonSonu(sira) {
   const sz = kariyer.sezon;
   const galibiyet = sz.tablo[0].g;
   const mesaj = [];
-  (kariyer.sponsorlar || []).forEach(function (s) {
-    if (s.bitis < kariyer.hafta - 1) return;
+  (kariyer.sponsorlar || []).concat(kariyer.sponsorBekleyen || []).forEach(function (s) {
+    if (s.bonusDegerlendirilenSezon === sz.no) return;
+    if (s.bitis < kariyer.hafta - 1 && s.bekleyenSezon !== sz.no) return;
+    s.bonusDegerlendirilenSezon = sz.no;
     if (!(s.imzaSezon < sz.no || s.imzaHf <= 1)) {
       mesaj.push(s.ad + ": sezon ortasında imzalandı, bonus yok.");
       return;
@@ -129,6 +153,7 @@ function sponsorSezonSonu(sira) {
       mesaj.push(s.ad + ": hedef tutmadı (" + hedefYazi(s.hedef) + ").");
     }
   });
+  kariyer.sponsorBekleyen = (kariyer.sponsorBekleyen || []).filter(s => s.bekleyenSezon !== sz.no);
   kariyer.sponsorSon = mesaj;
   sponsorTemizle();
 }
