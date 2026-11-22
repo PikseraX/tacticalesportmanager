@@ -1,0 +1,16 @@
+build:
+  name: App Store iOS IPA
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - run:
+        name: Copy Capacitor web assets
+        command: npm run ios:sync
+    - eas/configure_ios_credentials
+    - eas/generate_gymfile_from_template:
+        inputs:
+          credentials: ${ eas.job.secrets.buildCredentials }
+          scheme: App
+          build_configuration: Release
+    - eas/run_fastlane
+    - eas/find_and_upload_build_artifacts

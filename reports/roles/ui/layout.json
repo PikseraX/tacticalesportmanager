@@ -1,0 +1,20 @@
+[
+  {
+    "screen": "kadro",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "transfer-profili",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "rol-agirliklari",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  }
+]

@@ -21,7 +21,7 @@ const BASARIMLAR = [
   { id: "kusursuz", ad: "Kusursuz Kadro", acik: "İlk 5'teki herkes kendi rolünde 4 yeşil özelliğe sahip olsun.", kos: function () { return kariyer.oyuncular.every(function (o) { return yesilSayisi(o, o.rol) === 4; }); } },
   { id: "personel", ad: "Tam Kadro Personel", acik: "Koç, fizyoterapist ve analisti seviye 3 yap.", kos: function () { return PERSONEL_TURLERI.every(function (t) { return personelSeviye(t) >= 3; }); } },
   { id: "sponsor3", ad: "Marka Değeri", acik: "Aynı anda 3 sponsorun olsun.", kos: function () { return (kariyer.sponsorlar || []).filter(sponsorAktif).length >= 3; } },
-  { id: "aile", ad: "Büyük Aile", acik: "Yedek kadroyu (3) ve akademiyi (4) doldur.", kos: function () { return yedekListe().length >= YEDEK_MAX && (kariyer.akademi || []).length >= AKADEMI_MAX; } }
+  { id: "aile", ad: "Büyük Aile", acik: "Yedek kadroyu ve scout seviyenin izin verdiği akademi kapasitesini doldur.", kos: function () { return (kariyer.scout || 0) > 0 && yedekListe().length >= YEDEK_MAX && (kariyer.akademi || []).length >= akademiKapasitesi(); } }
 ];
 
 // Ana ekran açılırken çağrılır, yeni açılan başarımları işler
@@ -53,7 +53,7 @@ function basarimEkrani() {
   html += '<div class="bilgi-kutusu">Açılan: <b>' + n + " / " + BASARIMLAR.length + "</b></div>";
   BASARIMLAR.forEach(function (b) {
     const a = acik[b.id];
-    const stil = a ? ' style="border-color:#22c55e"' : "";
+    const stil = a ? ' style="border-color:var(--green)"' : "";
     html += '<div class="bilgi-kutusu"' + stil + "><b>" + (a ? "✓ " : "") + b.ad + "</b><br>" + b.acik + (a ? "<br><small>Sezon " + a.sezon + ", hafta " + a.hafta + "</small>" : "") + "</div>";
   });
   uygulama.innerHTML = html;
@@ -70,7 +70,7 @@ function arsivEkrani() {
   const acik = kariyer.basarimlar || {};
   const n = BASARIMLAR.filter(function (b) { return acik[b.id]; }).length;
   let html = '<button class="geri" onclick="kariyerEkrani()">← Geri</button><h2>Kariyer Arşivi</h2>';
-  html += '<div class="bilgi-kutusu"><b>' + kariyer.takimAdi + "</b><br>Mevcut sezon: <b>" + kariyer.sezon.no + "</b> · Tamamlanan: <b>" + g.length + "</b><br>Galibiyet: <b>" + w + "</b> · Mağlubiyet: <b>" + l + "</b> (%" + oran + ")<br>Lig şampiyonluğu: <b>" + ligSamp + "</b><br>Turnuva kupası: <b>" + kupa + "</b> (" + tg.length + " turnuva)<br>En iyi dünya sırası: <b>" + (kariyer.enIyiSira || benimDunyaSirasi()) + "</b> · Şimdiki: <b>" + benimDunyaSirasi() + "</b><br>Bütçe: <b>" + para(kariyer.butce) + "</b></div>";
+  html += '<div class="bilgi-kutusu"><b>' + oyunAdi(kariyer.takimAdi) + "</b><br>Mevcut sezon: <b>" + kariyer.sezon.no + "</b> · Tamamlanan: <b>" + g.length + "</b><br>Galibiyet: <b>" + w + "</b> · Mağlubiyet: <b>" + l + "</b> (%" + oran + ")<br>Lig şampiyonluğu: <b>" + ligSamp + "</b><br>Turnuva kupası: <b>" + kupa + "</b> (" + tg.length + " turnuva)<br>En iyi dünya sırası: <b>" + (kariyer.enIyiSira || benimDunyaSirasi()) + "</b> · Şimdiki: <b>" + benimDunyaSirasi() + "</b><br>Bütçe: <b>" + para(kariyer.butce) + "</b></div>";
   html += '<button class="buton" onclick="basarimEkrani()">Başarımlar (' + n + "/" + BASARIMLAR.length + ")</button>";
   html += "<h2>Sezon Geçmişi</h2>";
   if (g.length === 0) html += "<p>Henüz tamamlanan sezon yok.</p>";
@@ -79,7 +79,7 @@ function arsivEkrani() {
     g.slice().reverse().forEach(function (x) {
       let sonuc = "-";
       if (x.lig && x.yeniLig) sonuc = x.yeniLig < x.lig ? "Yükseldi" : (x.yeniLig > x.lig ? "Düştü" : "Kaldı");
-      html += "<tr><td>" + x.sezon + "</td><td>" + (x.lig ? LIG_ADLARI[x.lig - 1] : "-") + "</td><td>" + x.sira + "</td><td>" + sonuc + "</td><td>" + (x.mvp ? x.mvp.ad + " (" + x.mvp.ort + ")" : "-") + "</td></tr>";
+      html += "<tr><td>" + x.sezon + "</td><td>" + (x.lig ? LIG_ADLARI[x.lig - 1] : "-") + "</td><td>" + x.sira + "</td><td>" + sonuc + "</td><td>" + (x.mvp ? oyunAdi(x.mvp.ad) + " (" + x.mvp.ort + ")" : "-") + "</td></tr>";
     });
     html += "</table></div>";
   }

@@ -1,5 +1,5 @@
 const YESIL_ESIK = 62;
-const TARZ_ETKISI = [-4, -4, -1, 2, 4]; // 0..4 yeşil özellik
+const TARZ_ETKISI = [-2, -1, 0, 1, 2]; // 0..4 yeşil özellik
 
 const TARZLAR = {
   "Lider": ["liderlik", "iletisim", "karar", "bilgi"],
@@ -25,7 +25,7 @@ function tarzEtkisi(o) {
 
 function takimEtkin(oyuncular, strateji) {
   const t = oyuncular.reduce(function (s, o) { return s + tarzEtkisi(o); }, 0) / oyuncular.length;
-  return ortGuc(oyuncular) + t + stratejiEtkisi(oyuncular, strateji) + formEtkisi(oyuncular);
+  return ortGuc(oyuncular) + t + stratejiEtkisi(oyuncular, strateji) + formEtkisi(oyuncular) + (typeof kimyaGucEtkisi === "function" ? kimyaGucEtkisi(oyuncular) : 0);
 }
 
 function tarzYazi(o) {
@@ -71,10 +71,11 @@ function tarzlariHazirla() {
 }
 
 function rolRehberi() {
-  let html = '<button class="geri" onclick="kadroEkrani()">← Geri</button><h2>Rol Rehberi</h2>';
-  html += "<p>Rolün istediği 4 özellik " + YESIL_ESIK + " ve üzerindeyse yeşil yanar. Oyuncu başına etki: 0-1 yeşil " + TARZ_ETKISI[0] + ", 2 yeşil " + TARZ_ETKISI[2] + ", 3 yeşil +" + TARZ_ETKISI[3] + ", 4 yeşil +" + TARZ_ETKISI[4] + " takım gücü. Ayrıca GEN, rolün 4 özelliğine %70, diğer 8 özelliğe %30 ağırlık verir. Yanlış rolde oynayan oyuncunun GEN'i düşer ve maçta daha az öldürme alır.</p>";
+  let html = '<button class="geri" onclick="rehberMenu()">← Rehber</button><h2>Rol Rehberi</h2>';
+  html += "<p>Rolün istediği 4 özellik " + YESIL_ESIK + " ve üzerindeyse yeşil yanar. Oyuncu başına takım gücü etkisi: " + TARZ_ETKISI.map(function(e,i){return i + " yeşil " + etkiYazi(e);}).join(" · ") + ". GEN hesabında rolün dört ana özelliğinin toplam ağırlığı %85, diğerlerinin toplamı %15’tir. Destek rolünde nişanın ağırlığı yalnızca %1’dir.</p>";
+  html += "<p>Rol değişince GEN, aynı özellikler yeni role göre ağırlıklandırıldığı için değişebilir; bu doğrudan özellik artışı değildir. Rol etkileri takım ortalamasına girer. Yeşil özellikler tek başına galibiyet garantilemez.</p>";
   TARZ_LISTESI.forEach(function (t) {
-    html += '<div class="bilgi-kutusu"><b>' + t + "</b><br>" + TARZLAR[t].map(function (z) { return ODAK_ADLARI[z]; }).join(", ") + "</div>";
+    html += '<div class="bilgi-kutusu"><b>' + t + "</b><br>" + TARZLAR[t].map(function (z) { return ODAK_ADLARI[z]+" (%"+ROL_GEN_AGIRLIKLARI[t][z]+")"; }).join(", ") + "</div>";
   });
   uygulama.innerHTML = html;
 }

@@ -5,19 +5,11 @@ const ODAK_ADLARI = {
   istikrar: "İstikrar", baski: "Baskı Altında Performans"
 };
 
-function genelHesapla(o) {
-  const gerek = TARZLAR[o.rol] || [];
-  let a = 0, an = 0, b = 0, bn = 0;
-  OZELLIKLER.forEach(function (z) {
-    if (gerek.indexOf(z) >= 0) { a += o[z]; an++; } else { b += o[z]; bn++; }
-  });
-  if (an === 0 || bn === 0) { o.genel = Math.round((a + b) / (an + bn)); return; }
-  o.genel = Math.round(0.7 * a / an + 0.3 * b / bn);
-}
+function genelHesapla(o) { o.genel = rolGenelPuani(o,o.rol); }
 
 function gelisimSansi(o, odak) {
   if (o.pot !== undefined && o.genel >= o.pot) return 0;
-  if (o.yas < 24) return odak ? 0.6 : 0.15;
+  if (o.yas < 24) return odak ? 0.55 : 0.11;
   if (o.yas < 30) return odak ? 0.3 : 0.05;
   return 0;
 }
@@ -34,12 +26,15 @@ function oyuncuOdagi(o) {
 
 function antrenmanUygula() {
   const rapor = [];
+  tumKadro().forEach(kisilikAta);
   const kat = 1 + 0.1 * personelSeviye("koc");
+  rapor.push("Antrenman planı: " + antrenmanYogunlugu().ad);
+  if(tumKadro().some(o=>mentorCarpani(o)>1)) rapor.push("Mentor desteği: 24 yaş altı oyuncuların gelişim ihtimali +%5.");
   tumKadro().forEach(function (o) {
     const once = o.genel;
     const odak = oyuncuOdagi(o);
     OZELLIKLER.forEach(function (z) {
-      if (Math.random() < gelisimSansi(o, z === odak) * kat) o[z] = Math.min(99, o[z] + 1);
+      if (Math.random() < gelisimSansi(o, z === odak) * kat * antrenmanGelisimCarpani(o) * mentorCarpani(o)) o[z] = Math.min(99, o[z] + 1);
       if (Math.random() < gerilemeSansi(o)) o[z] = Math.max(1, o[z] - 1);
     });
     genelHesapla(o);
@@ -64,9 +59,10 @@ function yasKontrol() {
 function odakEkrani() {
   let html = '<button class="geri" onclick="kariyerEkrani()">← Geri</button><h2>Antrenman Odağı</h2>';
   html += "<p>Bir oyuncuya bas, odağını seç. Yedekler de antrenman yapar.</p>";
+  html += '<button class="gelisim-ozet-link" onclick="antrenmanYogunlukEkrani()">Antrenman Yoğunluğu <span>' + antrenmanYogunlugu().ad + ' ›</span></button>';
   tumKadro().forEach(function (o, i) {
     const yedek = i >= kariyer.oyuncular.length ? " · Yedek" : "";
-    html += '<button class="takim-butonu" onclick="oyuncuOdakSec(' + i + ')"><span>' + o.ad + " (" + o.rol + ", " + o.yas + yedek + ")</span><span>" + ODAK_ADLARI[oyuncuOdagi(o)] + "</span></button>";
+    html += '<button class="takim-butonu" onclick="oyuncuOdakSec(' + i + ")\"><span data-ceviri-isim-on-eki=\"" + oyunYazisi(o.ad) + "\">" + oyunYazisi(o.ad) + " (" + o.rol + ", " + o.yas + yedek + ")</span><span>" + ODAK_ADLARI[oyuncuOdagi(o)] + "</span></button>";
   });
   uygulama.innerHTML = html;
 }
@@ -74,10 +70,10 @@ function odakEkrani() {
 function oyuncuOdakSec(i) {
   const o = tumKadro()[i];
   const secili = oyuncuOdagi(o);
-  let html = '<button class="geri" onclick="odakEkrani()">← Geri</button><h2>' + o.ad + "</h2>";
+  let html = '<button class="geri" onclick="odakEkrani()">← Geri</button><h2>' + oyunAdi(o.ad) + "</h2>";
   html += "<p>Seçtiğin özellik her hafta daha hızlı gelişir.</p>";
   OZELLIKLER.forEach(function (z) {
-    const renk = z === secili ? ' style="border-color:#f59e0b"' : "";
+    const renk = z === secili ? ' style="border-color:var(--accent)"' : "";
     html += '<button class="takim-butonu"' + renk + ' onclick="odakKaydet(' + i + ", '" + z + '\')"><span>' + ODAK_ADLARI[z] + "</span><span>" + o[z] + (z === secili ? " · SEÇİLİ" : "") + "</span></button>";
   });
   uygulama.innerHTML = html;
@@ -89,16 +85,4 @@ function odakKaydet(i, z) {
   odakEkrani();
 }
 
-function haftaRaporu(g, rapor, yasArtti, sp, faiz) {
-  let html = "<h2>Hafta Raporu</h2>";
-  html += '<div class="bilgi-kutusu">Ödenen maaş: <b>' + para(g) + "</b>";
-  if (sp) html += "<br>Sponsor geliri: <b>+" + para(sp) + "</b>";
-  if (faiz) html += '<br><span style="color:#ef4444">Borç faizi: -' + para(faiz) + "</span>";
-  html += "<br>Hafta: <b>" + kariyer.hafta + "</b>";
-  if (yasArtti) html += "<br>Yeni sezon: oyuncular 1 yaş büyüdü.";
-  html += "</div><h2>Gelişim</h2>";
-  if (rapor.length === 0) html += "<p>Bu hafta genel değeri değişen oyuncu yok.</p>";
-  rapor.forEach(function (r) { html += "<p>" + r + "</p>"; });
-  html += '<button class="buton" onclick="kariyerEkrani()">Tamam</button>';
-  uygulama.innerHTML = html;
-}
+function haftaRaporu(g, rapor, yasArtti, sp, faiz) { haftalikOzetEkrani(); }

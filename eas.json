@@ -1,0 +1,37 @@
+{
+  "cli": {
+    "appVersionSource": "local"
+  },
+  "build": {
+    "base": {
+      "node": "22.23.1",
+      "env": {
+        "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1"
+      }
+    },
+    "preview": {
+      "extends": "base",
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug",
+        "withoutCredentials": true
+      }
+    },
+    "production": {
+      "extends": "base",
+      "android": {
+        "buildType": "app-bundle"
+      }
+    },
+    "app-store": {
+      "extends": "base",
+      "distribution": "store",
+      "ios": {
+        "image": "macos-tahoe-26.5-xcode-26.6",
+        "scheme": "App",
+        "buildConfiguration": "Release",
+        "config": "app-store.yml"
+      }
+    }
+  }
+}

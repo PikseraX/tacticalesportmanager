@@ -1,0 +1,1 @@
+(()=>{const before=kariyer.takimAdi;yedegiUygula();return {before,after:kariyer.takimAdi,week:kariyer.hafta,restored:kariyer.takimAdi==='Test Akademi',previous:!!localStorage.getItem(KAYIT_ANAHTARI+'_geri_donus')};})()

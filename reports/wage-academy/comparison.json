@@ -1,0 +1,555 @@
+{
+  "date": "2026-11-06",
+  "checks": {
+    "careers": 90,
+    "seasons": 1080,
+    "leagueGames": 15120,
+    "weeks": 30240,
+    "ledgers": 1080,
+    "sourceHashes": true
+  },
+  "before": {
+    "skilled": {
+      "n": 60,
+      "everDebt": 0,
+      "topLeague": 59,
+      "academyPromotions": 52,
+      "medianAcademyPromotions": 0.5,
+      "noAcademyPromotions": 30,
+      "years": [
+        {
+          "year": 1,
+          "cashMedian": 569861.5,
+          "genMedian": 54,
+          "weeklyCostsMedian": 12722.089285714286,
+          "debtCount": 0
+        },
+        {
+          "year": 2,
+          "cashMedian": 563518,
+          "genMedian": 60.4,
+          "weeklyCostsMedian": 15756.267857142857,
+          "debtCount": 0
+        },
+        {
+          "year": 3,
+          "cashMedian": 522028.5,
+          "genMedian": 66.69999999999999,
+          "weeklyCostsMedian": 22164.089285714283,
+          "debtCount": 0
+        },
+        {
+          "year": 4,
+          "cashMedian": 641418,
+          "genMedian": 72.9,
+          "weeklyCostsMedian": 24877.267857142855,
+          "debtCount": 0
+        },
+        {
+          "year": 5,
+          "cashMedian": 753694,
+          "genMedian": 77.69999999999999,
+          "weeklyCostsMedian": 28578.517857142855,
+          "debtCount": 0
+        },
+        {
+          "year": 6,
+          "cashMedian": 910863,
+          "genMedian": 81.6,
+          "weeklyCostsMedian": 32655.857142857145,
+          "debtCount": 0
+        },
+        {
+          "year": 7,
+          "cashMedian": 1209902.5,
+          "genMedian": 84.4,
+          "weeklyCostsMedian": 36191.696428571435,
+          "debtCount": 0
+        },
+        {
+          "year": 8,
+          "cashMedian": 1537108.5,
+          "genMedian": 87.4,
+          "weeklyCostsMedian": 39318.33928571429,
+          "debtCount": 0
+        },
+        {
+          "year": 9,
+          "cashMedian": 1881680.5,
+          "genMedian": 89.8,
+          "weeklyCostsMedian": 41543.91071428571,
+          "debtCount": 0
+        },
+        {
+          "year": 10,
+          "cashMedian": 2239841,
+          "genMedian": 92.1,
+          "weeklyCostsMedian": 43090.67857142857,
+          "debtCount": 0
+        },
+        {
+          "year": 11,
+          "cashMedian": 2640542,
+          "genMedian": 93,
+          "weeklyCostsMedian": 44556.607142857145,
+          "debtCount": 0
+        },
+        {
+          "year": 12,
+          "cashMedian": 3133661.5,
+          "genMedian": 93.8,
+          "weeklyCostsMedian": 45786.892857142855,
+          "debtCount": 0
+        }
+      ]
+    },
+    "ordinary": {
+      "n": 30,
+      "everDebt": 12,
+      "topLeague": 1,
+      "academyPromotions": 0,
+      "medianAcademyPromotions": 0,
+      "noAcademyPromotions": 30,
+      "years": [
+        {
+          "year": 1,
+          "cashMedian": 471456.5,
+          "genMedian": 52,
+          "weeklyCostsMedian": 9595,
+          "debtCount": 0
+        },
+        {
+          "year": 2,
+          "cashMedian": 510238,
+          "genMedian": 56.6,
+          "weeklyCostsMedian": 11059.607142857141,
+          "debtCount": 0
+        },
+        {
+          "year": 3,
+          "cashMedian": 558634,
+          "genMedian": 61.1,
+          "weeklyCostsMedian": 12382.571428571428,
+          "debtCount": 0
+        },
+        {
+          "year": 4,
+          "cashMedian": 621915,
+          "genMedian": 63.7,
+          "weeklyCostsMedian": 14092.660714285714,
+          "debtCount": 0
+        },
+        {
+          "year": 5,
+          "cashMedian": 681365.5,
+          "genMedian": 66,
+          "weeklyCostsMedian": 15899.732142857141,
+          "debtCount": 0
+        },
+        {
+          "year": 6,
+          "cashMedian": 678277,
+          "genMedian": 67.30000000000001,
+          "weeklyCostsMedian": 17313.714285714286,
+          "debtCount": 2
+        },
+        {
+          "year": 7,
+          "cashMedian": 684275,
+          "genMedian": 68.2,
+          "weeklyCostsMedian": 18119.303571428572,
+          "debtCount": 3
+        },
+        {
+          "year": 8,
+          "cashMedian": 702950.5,
+          "genMedian": 69.7,
+          "weeklyCostsMedian": 18699.678571428572,
+          "debtCount": 3
+        },
+        {
+          "year": 9,
+          "cashMedian": 508188,
+          "genMedian": 72.30000000000001,
+          "weeklyCostsMedian": 19146.678571428572,
+          "debtCount": 4
+        },
+        {
+          "year": 10,
+          "cashMedian": 489261,
+          "genMedian": 72.9,
+          "weeklyCostsMedian": 19773.714285714286,
+          "debtCount": 5
+        },
+        {
+          "year": 11,
+          "cashMedian": 366118,
+          "genMedian": 74,
+          "weeklyCostsMedian": 20723.535714285714,
+          "debtCount": 10
+        },
+        {
+          "year": 12,
+          "cashMedian": 240126,
+          "genMedian": 75.30000000000001,
+          "weeklyCostsMedian": 21264.553571428572,
+          "debtCount": 10
+        }
+      ]
+    }
+  },
+  "after": {
+    "skilled": {
+      "n": 60,
+      "everDebt": 1,
+      "topLeague": 60,
+      "academyPromotions": 115,
+      "medianAcademyPromotions": 2,
+      "noAcademyPromotions": 5,
+      "years": [
+        {
+          "year": 1,
+          "cashMedian": 559657,
+          "genMedian": 54,
+          "weeklyCostsMedian": 13065.107142857143,
+          "debtCount": 0
+        },
+        {
+          "year": 2,
+          "cashMedian": 545610.5,
+          "genMedian": 60.4,
+          "weeklyCostsMedian": 16194.303571428572,
+          "debtCount": 0
+        },
+        {
+          "year": 3,
+          "cashMedian": 534168.5,
+          "genMedian": 66.69999999999999,
+          "weeklyCostsMedian": 22588.875,
+          "debtCount": 0
+        },
+        {
+          "year": 4,
+          "cashMedian": 714304,
+          "genMedian": 74.1,
+          "weeklyCostsMedian": 25466.303571428572,
+          "debtCount": 0
+        },
+        {
+          "year": 5,
+          "cashMedian": 897521.5,
+          "genMedian": 78.8,
+          "weeklyCostsMedian": 30664.678571428572,
+          "debtCount": 0
+        },
+        {
+          "year": 6,
+          "cashMedian": 941445,
+          "genMedian": 82.5,
+          "weeklyCostsMedian": 35227.46428571429,
+          "debtCount": 0
+        },
+        {
+          "year": 7,
+          "cashMedian": 1200521,
+          "genMedian": 85.30000000000001,
+          "weeklyCostsMedian": 39758.28571428571,
+          "debtCount": 0
+        },
+        {
+          "year": 8,
+          "cashMedian": 1407440.5,
+          "genMedian": 88.9,
+          "weeklyCostsMedian": 44055.07142857143,
+          "debtCount": 0
+        },
+        {
+          "year": 9,
+          "cashMedian": 1574460.5,
+          "genMedian": 91.1,
+          "weeklyCostsMedian": 47599.08928571428,
+          "debtCount": 0
+        },
+        {
+          "year": 10,
+          "cashMedian": 1699492,
+          "genMedian": 92.30000000000001,
+          "weeklyCostsMedian": 50571.71428571429,
+          "debtCount": 1
+        },
+        {
+          "year": 11,
+          "cashMedian": 1954614,
+          "genMedian": 93.2,
+          "weeklyCostsMedian": 52591.732142857145,
+          "debtCount": 1
+        },
+        {
+          "year": 12,
+          "cashMedian": 1994629,
+          "genMedian": 93.6,
+          "weeklyCostsMedian": 54331.428571428565,
+          "debtCount": 1
+        }
+      ]
+    },
+    "ordinary": {
+      "n": 30,
+      "everDebt": 23,
+      "topLeague": 0,
+      "academyPromotions": 0,
+      "medianAcademyPromotions": 0,
+      "noAcademyPromotions": 30,
+      "years": [
+        {
+          "year": 1,
+          "cashMedian": 454802,
+          "genMedian": 51.8,
+          "weeklyCostsMedian": 9973.321428571428,
+          "debtCount": 0
+        },
+        {
+          "year": 2,
+          "cashMedian": 474632,
+          "genMedian": 56.6,
+          "weeklyCostsMedian": 11462.071428571428,
+          "debtCount": 0
+        },
+        {
+          "year": 3,
+          "cashMedian": 508425.5,
+          "genMedian": 60.9,
+          "weeklyCostsMedian": 12979.660714285714,
+          "debtCount": 0
+        },
+        {
+          "year": 4,
+          "cashMedian": 597107.5,
+          "genMedian": 63.599999999999994,
+          "weeklyCostsMedian": 15005.785714285714,
+          "debtCount": 1
+        },
+        {
+          "year": 5,
+          "cashMedian": 540240,
+          "genMedian": 65.69999999999999,
+          "weeklyCostsMedian": 16795.75,
+          "debtCount": 1
+        },
+        {
+          "year": 6,
+          "cashMedian": 563639.5,
+          "genMedian": 67.1,
+          "weeklyCostsMedian": 18614.625,
+          "debtCount": 1
+        },
+        {
+          "year": 7,
+          "cashMedian": 407425,
+          "genMedian": 68.4,
+          "weeklyCostsMedian": 19464.51785714286,
+          "debtCount": 3
+        },
+        {
+          "year": 8,
+          "cashMedian": 401692.5,
+          "genMedian": 69.69999999999999,
+          "weeklyCostsMedian": 20676.803571428572,
+          "debtCount": 6
+        },
+        {
+          "year": 9,
+          "cashMedian": 300071.5,
+          "genMedian": 69.5,
+          "weeklyCostsMedian": 20709.25,
+          "debtCount": 8
+        },
+        {
+          "year": 10,
+          "cashMedian": 201845,
+          "genMedian": 69.6,
+          "weeklyCostsMedian": 20745.053571428572,
+          "debtCount": 11
+        },
+        {
+          "year": 11,
+          "cashMedian": 78343,
+          "genMedian": 68.7,
+          "weeklyCostsMedian": 20223.232142857145,
+          "debtCount": 16
+        },
+        {
+          "year": 12,
+          "cashMedian": -412665,
+          "genMedian": 52.7,
+          "weeklyCostsMedian": 20846.732142857145,
+          "debtCount": 21
+        }
+      ]
+    }
+  },
+  "mentoring": [
+    {
+      "team": 60,
+      "potential": 85,
+      "runs": 400,
+      "points": [
+        {
+          "season": 1,
+          "mean": 61.11,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 2,
+          "mean": 72.2625,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 3,
+          "mean": 78.3825,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 4,
+          "mean": 81.9725,
+          "atPotentialPct": 0.25
+        }
+      ]
+    },
+    {
+      "team": 60,
+      "potential": 95,
+      "runs": 400,
+      "points": [
+        {
+          "season": 1,
+          "mean": 61.11,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 2,
+          "mean": 72.2625,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 3,
+          "mean": 79.385,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 4,
+          "mean": 84.9825,
+          "atPotentialPct": 0
+        }
+      ]
+    },
+    {
+      "team": 70,
+      "potential": 85,
+      "runs": 400,
+      "points": [
+        {
+          "season": 1,
+          "mean": 67.2875,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 2,
+          "mean": 79.1675,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 3,
+          "mean": 83.5825,
+          "atPotentialPct": 12
+        },
+        {
+          "season": 4,
+          "mean": 84.99,
+          "atPotentialPct": 99
+        }
+      ]
+    },
+    {
+      "team": 70,
+      "potential": 95,
+      "runs": 400,
+      "points": [
+        {
+          "season": 1,
+          "mean": 67.2875,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 2,
+          "mean": 80.455,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 3,
+          "mean": 87.39,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 4,
+          "mean": 90.77,
+          "atPotentialPct": 0
+        }
+      ]
+    },
+    {
+      "team": 80,
+      "potential": 85,
+      "runs": 400,
+      "points": [
+        {
+          "season": 1,
+          "mean": 73.24,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 2,
+          "mean": 83.91,
+          "atPotentialPct": 18.75
+        },
+        {
+          "season": 3,
+          "mean": 85,
+          "atPotentialPct": 100
+        },
+        {
+          "season": 4,
+          "mean": 85,
+          "atPotentialPct": 100
+        }
+      ]
+    },
+    {
+      "team": 80,
+      "potential": 95,
+      "runs": 400,
+      "points": [
+        {
+          "season": 1,
+          "mean": 73.2525,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 2,
+          "mean": 87.75,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 3,
+          "mean": 91.96,
+          "atPotentialPct": 0
+        },
+        {
+          "season": 4,
+          "mean": 93.445,
+          "atPotentialPct": 8.5
+        }
+      ]
+    }
+  ]
+}

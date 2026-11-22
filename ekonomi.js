@@ -3,15 +3,15 @@ const SPONSOR_TABAN = 2000;
 const SPONSOR_SIRA_CARPANI = 90;
 const MAC_GALIBIYET = 20000;
 const MAC_MAGLUBIYET = 5000;
-const MAC_ODUL_CARPANI = [2, 1.5, 1]; // 1. Lig, 2. Lig, 3. Lig
+const MAC_ODUL_CARPANI = [1.4, 1.3, 1.2, 1.1, 1]; // Üst liglerde daha yüksek maç ödülü
 const BORC_FAIZ = 0.02;
 
 const GELIR_ADLARI = { mac: "Maç ödülü", sezon: "Sezon sonu ödülü", turnuva: "Turnuva ödülü", sponsor: "Sponsor", transfer: "Oyuncu satışı / takas kazancı" };
-const GIDER_ADLARI = { maas: "Maaşlar", transfer: "Transfer ücretleri", yenileme: "Sözleşme yenileme", faiz: "Borç faizi", akademi: "Akademi ve scout", personel: "Personel", olay: "Takım içi olaylar" };
+const GIDER_ADLARI = { maas: "Maaşlar", transfer: "Transfer ücretleri", transferImza: "Transfer imza parası", sponsorFesih: "Sponsor fesih cezası", yenileme: "Sözleşme yenileme", faiz: "Borç faizi", akademi: "Akademi ve scout", personel: "Personel", olay: "Takım içi olaylar" };
 
 function sponsorGeliri() {
   const taban = (SPONSOR_TABAN + (101 - benimDunyaSirasi()) * SPONSOR_SIRA_CARPANI) * 0.5 * itibarCarpani();
-  return Math.round(taban) + sponsorHaftalik();
+  return Math.round(taban * (typeof taraftarSponsorCarpani === "function" ? taraftarSponsorCarpani() : 1)) + sponsorHaftalik();
 }
 
 function macOdulu(kazandi) {
@@ -54,7 +54,7 @@ function ekonomiEkrani() {
   const sira = benimDunyaSirasi();
   let html = '<button class="geri" onclick="kariyerEkrani()">← Geri</button><h2>Finans</h2>';
   html += '<div class="bilgi-kutusu">Bütçe: <b>' + para(kariyer.butce) + "</b><br>Haftalık maaş: <b>" + para(haftalikGider()) + "</b><br>Haftalık sponsor: <b>" + para(sponsorGeliri()) + "</b> (dünya sırası " + sira + ")<br>Haftalık net: <b>" + para(sponsorGeliri() - haftalikGider()) + "</b><br>Sezonluk maaş (28 hafta): <b>" + para(haftalikGider() * 28) + "</b>";
-  if (kariyer.butce < 0) html += '<br><span style="color:#ef4444">Borçtasın: her hafta %' + (BORC_FAIZ * 100) + " faiz işler.</span>";
+  if (kariyer.butce < 0) html += '<br><span style="color:var(--red)">Borçtasın: her hafta %' + (BORC_FAIZ * 100) + " faiz işler.</span>";
   html += "</div>";
   html += '<div class="bilgi-kutusu"><b>Sezon ' + m.sezon + " gelirleri</b>" + maliSatirlari(m.gelir, GELIR_ADLARI) + "<br><b>Toplam: " + para(gelir) + "</b></div>";
   html += '<div class="bilgi-kutusu"><b>Sezon ' + m.sezon + " giderleri</b>" + maliSatirlari(m.gider, GIDER_ADLARI) + "<br><b>Toplam: " + para(gider) + "</b></div>";

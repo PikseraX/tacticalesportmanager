@@ -1,0 +1,20 @@
+[
+  {
+    "screen": "canli-anlatim",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "kaydirma",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "mola",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  }
+]

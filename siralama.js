@@ -44,7 +44,7 @@ function siralamaEkrani() {
   html += '<div class="tablo-kutusu"><table><tr><th>Takım</th><th>Güç</th><th>Puan</th></tr>';
   l.forEach(function (x, i) {
     const stil = x.ben ? ' style="color:' + kariyer.renk + ';font-weight:bold"' : "";
-    html += "<tr" + stil + ' onclick="takimKadro(' + x.idx + ", 'siralamaEkrani()')\"><td>" + (i + 1) + ". " + x.ad + "</td><td>" + x.guc + "</td><td>" + x.puan + "</td></tr>";
+    html += "<tr" + stil + ' onclick="takimKadro(' + x.idx + ", 'siralamaEkrani()')\"><td>" + (i + 1) + ". " + oyunAdi(x.ad) + "</td><td>" + x.guc + "</td><td>" + x.puan + "</td></tr>";
   });
   html += "</table></div>";
   uygulama.innerHTML = html;

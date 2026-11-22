@@ -9,7 +9,7 @@ const PERSONEL = {
   },
   fizyo: {
     ad: "Fizyoterapist", maas: 1500,
-    etki: ["", "Haftalık dinlenme +2, mağlubiyet moral kaybı 4", "Haftalık dinlenme +3, mağlubiyet moral kaybı 3", "Haftalık dinlenme +4, mağlubiyet moral kaybı 2"]
+    etki: ["", "Haftalık dinlenme +2, mağlubiyet moral kaybı 3", "Haftalık dinlenme +3, mağlubiyet moral kaybı 2", "Haftalık dinlenme +4, mağlubiyet moral kaybı 2"]
   },
   analist: {
     ad: "Analist", maas: 1500,
@@ -29,7 +29,7 @@ function personelGideri() {
 
 // Oyuncu listesi senin takımına mı ait (canlı maçta kopya liste kullanılır)
 function benimTakimMi(oyuncular) {
-  return oyuncular.some(function (o) { return kariyer.oyuncular.indexOf(o) >= 0; });
+  return oyuncular.some(function (o) { return kariyer.oyuncular.indexOf(macKaynakOyuncu(o)) >= 0; });
 }
 
 function personelEkrani() {

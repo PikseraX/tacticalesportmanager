@@ -1,0 +1,164 @@
+[
+  {
+    "team": 60,
+    "potential": 85,
+    "runs": 400,
+    "points": [
+      {
+        "season": 1,
+        "mean": 61.11,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 2,
+        "mean": 72.2625,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 3,
+        "mean": 78.3825,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 4,
+        "mean": 81.9725,
+        "atPotentialPct": 0.25
+      }
+    ]
+  },
+  {
+    "team": 60,
+    "potential": 95,
+    "runs": 400,
+    "points": [
+      {
+        "season": 1,
+        "mean": 61.11,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 2,
+        "mean": 72.2625,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 3,
+        "mean": 79.385,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 4,
+        "mean": 84.9825,
+        "atPotentialPct": 0
+      }
+    ]
+  },
+  {
+    "team": 70,
+    "potential": 85,
+    "runs": 400,
+    "points": [
+      {
+        "season": 1,
+        "mean": 67.2875,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 2,
+        "mean": 79.1675,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 3,
+        "mean": 83.5825,
+        "atPotentialPct": 12
+      },
+      {
+        "season": 4,
+        "mean": 84.99,
+        "atPotentialPct": 99
+      }
+    ]
+  },
+  {
+    "team": 70,
+    "potential": 95,
+    "runs": 400,
+    "points": [
+      {
+        "season": 1,
+        "mean": 67.2875,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 2,
+        "mean": 80.455,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 3,
+        "mean": 87.39,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 4,
+        "mean": 90.77,
+        "atPotentialPct": 0
+      }
+    ]
+  },
+  {
+    "team": 80,
+    "potential": 85,
+    "runs": 400,
+    "points": [
+      {
+        "season": 1,
+        "mean": 73.24,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 2,
+        "mean": 83.91,
+        "atPotentialPct": 18.75
+      },
+      {
+        "season": 3,
+        "mean": 85,
+        "atPotentialPct": 100
+      },
+      {
+        "season": 4,
+        "mean": 85,
+        "atPotentialPct": 100
+      }
+    ]
+  },
+  {
+    "team": 80,
+    "potential": 95,
+    "runs": 400,
+    "points": [
+      {
+        "season": 1,
+        "mean": 73.2525,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 2,
+        "mean": 87.75,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 3,
+        "mean": 91.96,
+        "atPotentialPct": 0
+      },
+      {
+        "season": 4,
+        "mean": 93.445,
+        "atPotentialPct": 8.5
+      }
+    ]
+  }
+]

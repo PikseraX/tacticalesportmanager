@@ -1,0 +1,42 @@
+{
+  "name": "tactical-esports-manager",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tactical Esports Manager mobil uygulaması",
+  "scripts": {
+    "copy:web": "node scripts/copy-web.js",
+    "android:sync": "npm run copy:web && cap sync android",
+    "eas-build-post-install": "npm run android:sync && bash scripts/eas-android-jdk.sh",
+    "android:open": "cap open android",
+    "ios:sync": "npm run copy:web && cap copy ios",
+    "ios:open": "open ios/App.xcodeproj",
+    "economy:simulate": "node scripts/economy-simulation.js",
+    "match:simulate": "node scripts/match-difficulty-simulation.js",
+    "career:test": "node scripts/career-systems-test.js",
+    "playoff:test": "node scripts/playoff-test.js",
+    "audit:test": "node scripts/audit-regression-test.js",
+    "balance:study": "node scripts/balance-study.js",
+    "balance:controls": "node scripts/balance-controls.js",
+    "balance:test": "node scripts/balance-regression-test.js && node scripts/wage-academy-test.js && node scripts/wage-demand-test.js",
+    "club:test": "node scripts/club-features-test.js",
+    "planning:test": "node scripts/planning-test.js",
+    "training:study": "node scripts/training-study.js",
+    "depth:test": "node scripts/match-depth-test.js",
+    "depth:study": "node scripts/match-depth-study.js",
+    "commentary:test": "node scripts/commentary-test.js",
+    "guides:test": "node scripts/guides-test.js",
+    "roles:test": "node scripts/role-profile-test.js",
+    "lineup:test": "node scripts/lineup-test.js",
+    "market:test": "node scripts/market-roles-test.js",
+    "localization:test": "node scripts/localization-test.js && node scripts/localization-flows-test.js && node scripts/localization-match-test.js && node scripts/localization-fixes-test.js && node scripts/localization-commentary-test.js"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/ios": "8.6.0",
+    "@capgo/native-purchases": "8.9.6"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.0"
+  }
+}

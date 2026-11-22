@@ -1,0 +1,20 @@
+[
+  {
+    "screen": "piyasa",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "destek-sirasi",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "sniper-sirasi",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  }
+]

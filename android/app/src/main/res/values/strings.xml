@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Tactical Esports Manager</string>
+    <string name="title_activity_main">Tactical Esports Manager</string>
+    <string name="package_name">pikserax.tacticalesportsmanager</string>
+    <string name="custom_url_scheme">pikserax.tacticalesportsmanager</string>
+</resources>

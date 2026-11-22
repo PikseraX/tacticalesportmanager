@@ -1,0 +1,38 @@
+[
+  {
+    "screen": "yogunluk",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "yorgunluk-uyarisi",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "transfer-detay",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "izleme-listesi",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "karsilastirma",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "son-bilinen",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  }
+]

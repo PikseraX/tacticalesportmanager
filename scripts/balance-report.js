@@ -1,0 +1,76 @@
+const fs=require('node:fs'),path=require('node:path');
+const out=path.resolve(__dirname,'..','reports','balance');
+const read=p=>JSON.parse(fs.readFileSync(path.join(out,p),'utf8'));
+const before=read('balance-before.json'),candidate=read('balance-candidate.json'),final=read('balance-final.json'),controlsBefore=read('balance-controls-before.json'),controls=read('balance-controls-after.json');
+const fmt=x=>x===null?'—':Number(x).toLocaleString('tr-TR');
+const median=a=>{a=a.slice().sort((x,y)=>x-y);return a.length?a[Math.floor(a.length/2)]:null};
+const count=final.counters;
+const totalSeasons=[before,candidate,final].reduce((s,r)=>s+r.results.reduce((n,x)=>n+x.seasons.length,0),0);
+const totalCareers=before.results.length+candidate.results.length+final.results.length;
+const lines=[
+'# Tactical Esports Manager — Denge İncelemesi',
+'',
+'Üç yönetim politikasıyla gerçek oyun işlevleri kullanıldı. İlk ölçüm 72 kariyer, ara doğrulama 72 kariyer, son tarama 180 kariyerdir. Toplam '+fmt(totalCareers)+' kariyer ve '+fmt(totalSeasons)+' sezon incelendi.',
+'',
+'Son taramada '+fmt(count.liveMaps)+' yönetilen harita, '+fmt(count.backgroundMaps)+' rakip/lig haritası ve '+fmt(count.rounds)+' raund işlendi. Önce/sonra bağımsız kontrollerde ayrıca 8.400 harita ve 2.400 sezonluk tek oyuncu antrenmanı örneği ölçüldü.',
+'',
+'## Yöntem ve sınırlar',
+'',
+'- Rahat: iki sponsor, koç seviye 1, sabit taktik, 12 haftada bir transfer değerlendirmesi; turnuva/scout yok.',
+'- Dengeli: üç sponsor, analist ve sınırlı personel yatırımı, karşı taktik, turnuva ve scout; 8 haftada bir transfer değerlendirmesi.',
+'- Planlı: daha yüksek personel yatırımı, karşı taktik ve mola, turnuva/scout; 6 haftada bir transfer değerlendirmesi.',
+'- Maç olasılığı, raund çözümü, gelişim, pazarlık, maaş, sponsor, hafta ve sezon geçişleri gerçek kaynak işlevleridir. Sabit tohumlar kullanılır. Görsel animasyon ve disk kaydı ölçüm dışındadır.',
+'- Politikalar ödeme ve sözleşme tarihlerini takip eden otomatik menajerlerdir. Bu sonuçlar gerçek oyuncu davranışı, oturum süresi veya oyuncu tutma oranı ölçümü değildir.',
+'',
+'## Yapılan ayarlar',
+'',
+'1. 24 yaş altı: odak gelişimi %60 → %55, diğer özellikler %15 → %11. Orta yaş ve yaşlı oyuncuların yaş eğrisi korunur.',
+'2. Yeşil rol özelliği etkisi -4/-4/-1/+2/+4 → -2/-1/0/+1/+2. Küçük GEN farklarında eşik sıçraması yumuşar.',
+'3. Mağlubiyet moral kaybı fizyoterapist seviyesine göre 5/4/3/2 → 4/3/2/2. İlk 5 haftalık olarak 70 morale 2 puan yaklaşır.',
+'4. Yenileme maaşı en fazla %15 artar ve güncel piyasa maaşının %120’siyle sınırlıdır. Aşırı şişmiş eski sözleşmelerin yenileme ücreti de piyasa değeriyle sınırlandırılır.',
+'5. Scout 80+ potansiyel olasılığı %5/%10/%15, kapasite 2/4/6, görevde 1–2 aday ve reklam zamanlaması korunur.',
+'',
+'## Son tarama',
+'',
+'| Profil | Lig maçı kazanma | İlk yükselme medyanı | 8 sezonda yükselen | 1. Lige ulaşan | Borç gören | Son bütçe medyanı |',
+'|---|---:|---:|---:|---:|---:|---:|',
+...final.summary.map(x=>'| '+x.profile+' | %'+fmt(x.winRate)+' | '+fmt(x.firstPromotionMedian)+' sezon | %'+fmt(x.promoted)+' | %'+fmt(x.topLeague)+' | %'+fmt(x.anyDebt)+' | '+fmt(x.finalCashMedian)+' $ |'),
+'',
+'Yükselme medyanı, en az bir kez yükselen kariyerlerden hesaplanır. Borç görmek herhangi bir haftada bütçenin sıfır altına inmesidir; oyun sonu veya iflas anlamına gelmez. Simülasyonda -1.000.000 $ altında kalan örnekler risk işaretiyle durdurulur.',
+'',
+'## Önce / sonra (aynı büyüklükte 24 kariyer / profil)',
+'',
+'| Profil | Eski kazanma | Yeni kazanma | Eski borç oranı | Yeni borç oranı |',
+'|---|---:|---:|---:|---:|',
+...candidate.summary.map(x=>{const b=before.summary.find(q=>q.profile===x.profile);return '| '+x.profile+' | %'+fmt(b.winRate)+' | %'+fmt(x.winRate)+' | %'+fmt(b.anyDebt)+' | %'+fmt(x.anyDebt)+' |'}),
+'',
+'## Güç farkı kontrolü',
+'',
+'Her satırda 600 harita. Takımların GEN dışındaki temel koşulları nötr tutuldu; oyunun gerçek taktik, mola ve raund işlevleri kullanıldı.',
+'',
+'| GEN farkı | Önce kazanma | Sonra kazanma |',
+'|---|---:|---:|',
+...controls.matchups.map((x,i)=>'| '+(x.gap>0?'+':'')+x.gap+' | %'+fmt(controlsBefore.matchups[i].rate)+' | %'+fmt(x.rate)+' |'),
+'',
+'## Gelişim',
+'',
+'| Yaş | Koç | Önce GEN/sezon | Sonra GEN/sezon |',
+'|---|---:|---:|---:|',
+...controls.training.map((x,i)=>'| '+x.age+' | '+x.coach+' | '+fmt(controlsBefore.training[i].genPerSeason)+' | '+fmt(x.genPerSeason)+' |'),
+'',
+'35 GEN ve 80 potansiyelle akademiye giren örnekte sonraki sezon ortalamaları: '+controls.academyGenBySeason.map(fmt).join(' → ')+'. Sezon içindeki 28 haftalık akademi gelişimi gerçek işlevden alınmıştır.',
+'',
+'## Doğrulama',
+'',
+'- npm run balance:test',
+'- npm run career:test',
+'- npm run audit:test',
+'- node scripts/ad-policy-test.js',
+'- npm run balance:controls',
+'- npm run balance:study -- --runs 60 --seasons 8 --out reports/balance/balance-final.json',
+'- Android assembleDebug',
+'',
+'Ham örnekler ve sezon bazlı sonuçlar aynı klasördeki JSON dosyalarındadır.'
+];
+fs.writeFileSync(path.join(out,'denge-raporu.md'),lines.join('\n'));
+console.log(JSON.stringify({totalCareers,totalSeasons,counters:count,summary:final.summary,riskStops:final.results.filter(r=>r.stalled).length},null,2));

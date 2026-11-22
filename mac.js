@@ -65,7 +65,7 @@ const p = Math.min(0.7, Math.max(0.3, 1 / (1 + Math.exp(-fark / 80))));
 function macRakipSec() {
   let html = '<button class="geri" onclick="kariyerEkrani()">← Geri</button><h2>Rakip Seç</h2>';
   dunya.forEach(function (t, i) {
-    html += '<button class="takim-butonu" onclick="macBaslat(' + i + ')"><span>' + t.ad + '</span><span>Güç: ' + Math.round(ortGuc(t.oyuncular)) + "</span></button>";
+    html += '<button class="takim-butonu" onclick="macBaslat(' + i + ')"><span>' + oyunAdi(t.ad) + '</span><span>Güç: ' + Math.round(ortGuc(t.oyuncular)) + "</span></button>";
   });
   uygulama.innerHTML = html;
 }
@@ -84,11 +84,11 @@ function macBaslat(i) {
 }
 
 function istTablo(ad, ist) {
-  let h = "<h2>" + ad + "</h2>";
+  let h = "<h2>" + oyunAdi(ad) + "</h2>";
   h += '<div class="tablo-kutusu"><table><tr><th>Oyuncu</th><th>Öl</th><th>Ölüm</th><th>K/D</th></tr>';
   ist.forEach(function (x) {
     const kd = x.death === 0 ? x.kill : (x.kill / x.death).toFixed(2);
-    h += "<tr><td>" + x.o.ad + "</td><td>" + x.kill + "</td><td>" + x.death + "</td><td>" + kd + "</td></tr>";
+    h += "<tr><td>" + oyunAdi(x.o.ad) + "</td><td>" + x.kill + "</td><td>" + x.death + "</td><td>" + kd + "</td></tr>";
   });
   return h + "</table></div>";
 }
@@ -96,13 +96,14 @@ function istTablo(ad, ist) {
 function macRaporu(A, B, s, odul) {
   const kazandi = s.sa > s.sb;
   let html = "<h2>Maç Raporu</h2>";
-  html += '<div class="bilgi-kutusu"><b>' + A.ad + " " + s.sa + " - " + s.sb + " " + B.ad + "</b><br>";
+  html += '<div class="bilgi-kutusu"><b>' + oyunAdi(A.ad) + " " + s.sa + " - " + s.sb + " " + oyunAdi(B.ad) + "</b><br>";
   html += kazandi ? "Kazandın!" : "Kaybettin.";
   html += s.uzatma ? " (Uzatma oynandı)" : "";
   html += "<br>Kazanç: <b>+" + para(odul) + "</b>";
   html += "</div>";
-  html += istTablo(A.ad, s.istA) + istTablo(B.ad, s.istB);
+  html += macOyuncuIstatistikleri(A.ad, s.istA, B.ad, s.istB);
   html += '<button class="buton" onclick="macRakipSec()">Başka Maç</button>';
   html += '<button class="buton ikincil" onclick="kariyerEkrani()">Kariyere Dön</button>';
   uygulama.innerHTML = html;
+  reklamMacTamamlandi();
 }

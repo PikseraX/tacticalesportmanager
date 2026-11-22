@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Tactical Esports Manager",
+    "slug": "tactical-esports-manager",
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "android": {
+      "package": "pikserax.tacticalesportsmanager"
+    },
+    "ios": {
+      "bundleIdentifier": "pikserax.tacticalesportsmanager"
+    }
+  }
+}

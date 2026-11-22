@@ -1,0 +1,26 @@
+[
+  {
+    "screen": "rehber-merkezi",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "mac-rehberi",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "scout-rehberi",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "rol-rehberi",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  }
+]

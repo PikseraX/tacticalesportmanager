@@ -1,0 +1,1 @@
+(()=>{const r=globalThis.__importResult;if(!r?.text)return {result:r};const k=yedekDogrula(r.text);yedekOnizle(r.text);return {bytes:r.text.length,name:k.takimAdi,season:k.sezon.no,preview:document.body.innerText.includes('Bu Yedeği Geri Yükle')};})()

@@ -1,0 +1,85 @@
+{
+  "matchups": [
+    {
+      "gap": -20,
+      "maps": 600,
+      "wins": 127,
+      "rate": 21.2
+    },
+    {
+      "gap": -10,
+      "maps": 600,
+      "wins": 217,
+      "rate": 36.2
+    },
+    {
+      "gap": -5,
+      "maps": 600,
+      "wins": 232,
+      "rate": 38.7
+    },
+    {
+      "gap": 0,
+      "maps": 600,
+      "wins": 302,
+      "rate": 50.3
+    },
+    {
+      "gap": 5,
+      "maps": 600,
+      "wins": 377,
+      "rate": 62.8
+    },
+    {
+      "gap": 10,
+      "maps": 600,
+      "wins": 422,
+      "rate": 70.3
+    },
+    {
+      "gap": 20,
+      "maps": 600,
+      "wins": 485,
+      "rate": 80.8
+    }
+  ],
+  "training": [
+    {
+      "age": 20,
+      "coach": 0,
+      "genPerSeason": 5.1
+    },
+    {
+      "age": 20,
+      "coach": 3,
+      "genPerSeason": 6.9
+    },
+    {
+      "age": 27,
+      "coach": 0,
+      "genPerSeason": 2.7
+    },
+    {
+      "age": 27,
+      "coach": 3,
+      "genPerSeason": 3.4
+    },
+    {
+      "age": 32,
+      "coach": 0,
+      "genPerSeason": -3.3
+    },
+    {
+      "age": 32,
+      "coach": 3,
+      "genPerSeason": -3.5
+    }
+  ],
+  "academyGenBySeason": [
+    44.9,
+    54.7,
+    64.4,
+    74.2,
+    80
+  ]
+}

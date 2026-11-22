@@ -1,0 +1,14 @@
+[
+  {
+    "screen": "listeye-donus",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  },
+  {
+    "screen": "tekrar-inceleme",
+    "width": 411,
+    "scroll": 411,
+    "overflow": 0
+  }
+]

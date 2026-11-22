@@ -1,0 +1,9 @@
+{
+  "appId": "pikserax.tacticalesportsmanager",
+  "appName": "Tactical Esports Manager",
+  "webDir": "www",
+  "ios": {
+    "includePlugins": ["@capgo/native-purchases"],
+    "backgroundColor": "#080d16"
+  }
+}

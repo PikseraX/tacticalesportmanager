@@ -4,7 +4,7 @@ const TEKLIF_MIN_GEN = 65;
 const TEKLIF_MAX = 2;
 
 function ayrilmaZamaniGeldi(o) {
-  return (kariyer.hafta || 1) > o.bitis + SOZLESME_EK_HAFTA;
+  return (kariyer.hafta || 1) > o.bitis + (maasIyilestirmeGerekli(o) ? 0 : SOZLESME_EK_HAFTA);
 }
 
 // İlk 5 eksilirse yedekten, yedek yoksa piyasadan en ucuz oyuncuyla tamamlar
@@ -50,11 +50,11 @@ function sozlesmeKontrol(rapor) {
     const i = kariyer.oyuncular.indexOf(o);
     if (i >= 0) kariyer.oyuncular.splice(i, 1);
     else yedekListe().splice(yedekListe().indexOf(o), 1);
-    delete o.bitis;
+    serbestOyuncuTemizle(o);
     kariyer.serbest.push(o);
     rapor.push("Sözleşmesi bitti, ayrıldı: " + o.ad + " (GEN " + o.genel + ")");
   });
-  while (kariyer.serbest.length > 12) kariyer.serbest.shift();
+  serbestDoldur();
   kadroTamamla(rapor, gidenler);
 }
 
@@ -91,7 +91,7 @@ function teklifEkrani() {
   if (kariyer.teklifler.length === 0) html += "<p>Şu an teklif yok.</p>";
   kariyer.teklifler.forEach(function (t, i) {
     const o = teklifOyuncu(t);
-    html += '<button class="takim-butonu" onclick="teklifDetay(' + i + ')"><span style="text-align:left">' + o.ad + " (" + o.rol + ", GEN " + o.genel + ")<br><small>" + t.kulup + "</small></span><span>" + para(t.fiyat) + "</span></button>";
+    html += '<button class="takim-butonu" onclick="teklifDetay(' + i + ")\"><span style=\"text-align:left\" data-ceviri-isim-on-eki=\"" + oyunYazisi(o.ad) + "\">" + oyunYazisi(o.ad) + " (" + o.rol + ", GEN " + o.genel + ")<br><small>" + oyunAdi(t.kulup) + "</small></span><span>" + para(t.fiyat) + "</span></button>";
   });
   uygulama.innerHTML = html;
 }
@@ -100,19 +100,21 @@ function teklifDetay(i) {
   const t = kariyer.teklifler[i];
   const o = t && teklifOyuncu(t);
   if (!o) { teklifEkrani(); return; }
-  let html = '<button class="geri" onclick="teklifEkrani()">← Geri</button><h2>' + o.ad + "</h2>";
+  let html = '<button class="geri" onclick="teklifEkrani()">← Geri</button><h2>' + oyunAdi(o.ad) + "</h2>";
   html += tabloHtml([o]);
-  html += '<div class="bilgi-kutusu">Teklif eden: <b>' + t.kulup + "</b><br>Teklif: <b>" + para(t.fiyat) + "</b><br>Senin satış fiyatın olurdu: " + para(satisFiyati(o)) + "<br>Moral: <b>" + moralOf(o) + "</b></div>";
+  html += '<div class="bilgi-kutusu">Teklif eden: <b>' + oyunAdi(t.kulup) + "</b><br>Teklif: <b>" + para(t.fiyat) + "</b><br>Senin satış fiyatın olurdu: " + para(satisFiyati(o)) + "<br>Moral: <b>" + moralOf(o) + "</b></div>";
   html += '<button class="buton" onclick="teklifKabul(' + i + ')">Kabul Et</button>';
   html += '<button class="buton tehlike" onclick="teklifRed(' + i + ')">Reddet (moral -5)</button>';
   uygulama.innerHTML = html;
 }
 
 function teklifKabul(i) {
+  if ((typeof canli !== "undefined" && canli) || (typeof canliSeri !== "undefined" && canliSeri)) { macDevamEkrani(); return; }
   const t = kariyer.teklifler[i];
   const o = t && teklifOyuncu(t);
   if (!o) { teklifEkrani(); return; }
   if (!confirm(o.ad + " " + t.kulup + " takımına satılacak: +" + para(t.fiyat) + ". Kadro eksik kalırsa yedekten ya da piyasadan en ucuz oyuncu otomatik alınır. Onaylıyor musun?")) return;
+  taraftarTransfer(null, o);
   kariyer.butce += t.fiyat;
   maliIsle("gelir", "transfer", t.fiyat);
   const k = kariyer.oyuncular.indexOf(o);

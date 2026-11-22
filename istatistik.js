@@ -6,7 +6,8 @@ function istHazirla(o) {
 function macIstatistikIsle(istA) {
   const no = kariyer.sezon.no;
   istA.forEach(function (x) {
-    const o = x.o;
+    const o = macKaynakOyuncu(x.o);
+    o.sonOynadigiHafta = kariyer.hafta;
     istHazirla(o);
     if (o.ist.sk !== no) { o.ist.sk = no; o.ist.sm = 0; o.ist.sol = 0; o.ist.sod = 0; }
     o.ist.sm++; o.ist.sol += x.kill; o.ist.sod += x.death;
@@ -45,14 +46,14 @@ function istatistikEkrani(mod) {
     const d = istDeger(o, mod);
     const kd = d.od === 0 ? (d.ol === 0 ? "-" : d.ol) : (d.ol / d.od).toFixed(2);
     const mb = d.m === 0 ? "-" : (d.ol / d.m).toFixed(1);
-    html += "<tr><td>" + o.ad + "</td><td>" + d.m + "</td><td>" + d.ol + "</td><td>" + d.od + "</td><td>" + kd + "</td><td>" + mb + "</td></tr>";
+    html += "<tr><td>" + oyunAdi(o.ad) + "</td><td>" + d.m + "</td><td>" + d.ol + "</td><td>" + d.od + "</td><td>" + kd + "</td><td>" + mb + "</td></tr>";
   });
   html += "</table></div>";
   html += "<h2>Sezon Geçmişi</h2>";
   const g = kariyer.gecmis || [];
   if (g.length === 0) html += "<p>Henüz tamamlanan sezon yok.</p>";
   g.forEach(function (x) {
-    html += '<div class="bilgi-kutusu">Sezon ' + x.sezon + ": <b>" + x.sira + ".</b> sıra" + (x.mvp ? "<br>En iyi oyuncu: <b>" + x.mvp.ad + "</b> (maç başı " + x.mvp.ort + " öldürme)" : "") + "</div>";
+    html += '<div class="bilgi-kutusu">Sezon ' + x.sezon + ": <b>" + x.sira + ".</b> sıra" + (x.mvp ? "<br>En iyi oyuncu: <b>" + oyunAdi(x.mvp.ad) + "</b> (maç başı " + x.mvp.ort + " öldürme)" : "") + "</div>";
   });
   html += "<p>Not: Satılan oyuncuların istatistikleri listede görünmez.</p>";
   uygulama.innerHTML = html;

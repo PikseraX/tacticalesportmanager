@@ -8,14 +8,19 @@ function haritaUret(m) {
   return h;
 }
 
+function haritaKayitTamamla(h) {
+  HARITALAR.forEach(function (ad) { if (!Number.isFinite(h[ad])) h[ad] = 0; });
+  return h;
+}
+
 // Takımın harita puanlarını döndürür, yoksa oluşturur
 function haritaOf(t) {
   if (t.oyuncular === kariyer.oyuncular) {
     if (!kariyer.harita) kariyer.harita = haritaUret(4);
-    return kariyer.harita;
+    return haritaKayitTamamla(kariyer.harita);
   }
   if (!t.harita) t.harita = haritaUret(8);
-  return t.harita;
+  return haritaKayitTamamla(t.harita);
 }
 
 function haritaPuani(t, ad) {
@@ -31,7 +36,7 @@ function haritaTablosu(t) {
   let html = '<h2>Harita Puanları</h2><div class="tablo-kutusu"><table><tr><th>Harita</th><th>Puan</th></tr>';
   HARITALAR.forEach(function (ad) {
     const v = h[ad];
-    const stil = v >= 4 ? ' style="color:#22c55e;font-weight:bold"' : (v <= -4 ? ' style="color:#ef4444"' : "");
+    const stil = v >= 4 ? ' style="color:var(--green);font-weight:bold"' : (v <= -4 ? ' style="color:var(--red)"' : "");
     html += "<tr><td>" + ad + "</td><td" + stil + ">" + (v > 0 ? "+" : "") + v + "</td></tr>";
   });
   return html + "</table></div>";
@@ -58,15 +63,24 @@ function haritaAntrenmaniUygula(rapor) {
   });
 }
 
+// Her tamamlanan maç, oynandığı haritada kalıcı pratik kazandırır.
+function haritaMacGelisimi(ad) {
+  const h = haritaOf({ oyuncular: kariyer.oyuncular });
+  const once = h[ad] || 0;
+  if (once >= HARITA_MAX) return null;
+  h[ad] = once + 1;
+  return { once: once, sonra: h[ad] };
+}
+
 function haritaAntrenmanEkrani() {
   const h = haritaOf({ oyuncular: kariyer.oyuncular });
   let html = '<button class="geri" onclick="kadroEkrani()">← Geri</button><h2>Harita Antrenmanı</h2>';
   html += "<p>Her hafta tek haritaya odaklanırsın. Kötü haritalar hızlı gelişir, yüksek haritalar yavaş. Çalışılmayan haritalar zamanla düşer.</p>";
-  if (!kariyer.haritaOdak) html += '<div class="bilgi-kutusu" style="border-color:#ef4444">Odak seçilmedi: tüm haritalar aşınır.</div>';
+  if (!kariyer.haritaOdak) html += '<div class="bilgi-kutusu" style="border-color:var(--red)">Odak seçilmedi: tüm haritalar aşınır.</div>';
   HARITALAR.forEach(function (ad) {
     const v = h[ad];
     const secili = ad === kariyer.haritaOdak;
-    const renk = secili ? ' style="border-color:#f59e0b"' : "";
+    const renk = secili ? ' style="border-color:var(--accent)"' : "";
     const gel = v >= HARITA_MAX ? "max" : Math.round(haritaGelisimSansi(v) * 100) + "%";
     const kay = v <= HARITA_MIN ? "0%" : Math.round(haritaKayipSansi(v) * 100) + "%";
     html += '<button class="takim-butonu"' + renk + ' onclick="haritaOdakSec(\'' + ad + '\')"><span style="text-align:left">' + ad + (secili ? " · SEÇİLİ" : "") + "<br>Puan: " + (v > 0 ? "+" : "") + v + '</span><span style="text-align:right">Gelişme: ' + gel + "<br>Kayıp: " + kay + "</span></button>";
@@ -125,7 +139,7 @@ function hazirlikEkrani() {
   sezonHazirla();
   const sz = kariyer.sezon;
   if (sz.bitti || sz.oynandi) { kariyerEkrani(); return; }
-  banDurum = { mod: "lig", rakip: haftaRakip(), hedef: 1, geri: "kariyerEkrani()", banlar: [] };
+  banDurum = { mod: "lig", rakip: haftaRakip(), hedef: 1, geri: "hazirlikIptalEt()", banlar: [] };
   banEkrani();
 }
 
@@ -137,7 +151,7 @@ function banEkrani() {
   const hr = haritaOf(d.rakip);
   const kalan = banKalan();
   let html = '<button class="geri" onclick="' + d.geri + '">← Geri</button><h2>Harita Yasaklama</h2>';
-  html += '<div class="bilgi-kutusu">Rakip: <b>' + d.rakip.ad + "</b><br>Güç: <b>" + Math.round(ortGuc(d.rakip.oyuncular)) + "</b>";
+  html += '<div class="bilgi-kutusu">Rakip: <b>' + oyunAdi(d.rakip.ad) + "</b><br>Güç: <b>" + Math.round(ortGuc(d.rakip.oyuncular)) + "</b>";
   if (an >= 1) {
     if (d.rakip.strateji) html += "<br>Strateji: <b>" + d.rakip.strateji + "</b>";
     let en = HARITALAR[0];
@@ -163,7 +177,7 @@ function banEkrani() {
       if (an >= 2) {
         const fark = hb[ad] - hr[ad];
         yazi = "Sen " + (hb[ad] > 0 ? "+" : "") + hb[ad] + " · Rakip " + (hr[ad] > 0 ? "+" : "") + hr[ad] + " · Fark " + (fark > 0 ? "+" : "") + fark;
-        renk = fark > 0 ? ' style="border-color:#22c55e"' : (fark < 0 ? ' style="border-color:#ef4444"' : "");
+        renk = fark > 0 ? ' style="border-color:var(--green)"' : (fark < 0 ? ' style="border-color:var(--red)"' : "");
       } else {
         yazi = "Sen " + (hb[ad] > 0 ? "+" : "") + hb[ad] + " · Rakip ?";
       }
@@ -175,13 +189,14 @@ function banEkrani() {
 
 function banYap(ad) {
   if (!banDurum) return;
-  if (banKalan().length <= banDurum.hedef) return;
+  const kalanOnce = banKalan();
+  if (kalanOnce.length <= banDurum.hedef || !kalanOnce.includes(ad)) return;
   banDurum.banlar.push({ kim: "sen", harita: ad });
   const kalan = banKalan();
   if (kalan.length > banDurum.hedef) {
     banDurum.banlar.push({ kim: "rakip", harita: rakipBanSec(banDurum.rakip, kalan) });
   }
-  banEkrani();
+  ekraniKonumdaGuncelle(banEkrani);
 }
 
 function banOyna() {
@@ -195,11 +210,19 @@ function banOyna() {
   } else {
     const sen = d.banlar.filter(function (b) { return b.kim === "sen"; }).map(function (b) { return b.harita; }).join(", ");
     const rk = d.banlar.filter(function (b) { return b.kim === "rakip"; }).map(function (b) { return b.harita; }).join(", ");
-    canliSeriBasla(kalan, "Yasaklar: sen " + sen + " · rakip " + rk);
+    if (d.mod === "playoff") playoffSeriBasla(kalan, "Yasaklar: sen " + sen + " · rakip " + rk);
+    else canliSeriBasla(kalan, "Yasaklar: sen " + sen + " · rakip " + rk);
   }
 }
 const HARITA_ETKI_CARPANI = 0.6;
 
 function haritaEtkisi(A, B, harita) {
   return Math.round((haritaPuani(A, harita) - haritaPuani(B, harita)) * HARITA_ETKI_CARPANI * 10) / 10;
+}
+
+function hazirlikIptalEt() {
+  const turnuva = banDurum && banDurum.mod === "turnuva";
+  const playoff = banDurum && banDurum.mod === "playoff";
+  banDurum = null;
+  if (playoff) playoffEkrani(); else if (turnuva) turnuvaDevam(); else kariyerEkrani();
 }

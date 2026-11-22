@@ -1,0 +1,95 @@
+{
+  "maps": 12000,
+  "rows": [
+    {
+      "scenario": "esit",
+      "plan": "standart",
+      "maps": 1000,
+      "wins": 497,
+      "winRate": 49.7
+    },
+    {
+      "scenario": "esit",
+      "plan": "guvenli",
+      "maps": 1000,
+      "wins": 489,
+      "winRate": 48.9
+    },
+    {
+      "scenario": "esit",
+      "plan": "utility",
+      "maps": 1000,
+      "wins": 499,
+      "winRate": 49.9
+    },
+    {
+      "scenario": "esit",
+      "plan": "yildiz",
+      "maps": 1000,
+      "wins": 469,
+      "winRate": 46.9
+    },
+    {
+      "scenario": "utilityUstun",
+      "plan": "standart",
+      "maps": 1000,
+      "wins": 536,
+      "winRate": 53.6
+    },
+    {
+      "scenario": "utilityUstun",
+      "plan": "guvenli",
+      "maps": 1000,
+      "wins": 527,
+      "winRate": 52.7
+    },
+    {
+      "scenario": "utilityUstun",
+      "plan": "utility",
+      "maps": 1000,
+      "wins": 564,
+      "winRate": 56.4
+    },
+    {
+      "scenario": "utilityUstun",
+      "plan": "yildiz",
+      "maps": 1000,
+      "wins": 509,
+      "winRate": 50.9
+    },
+    {
+      "scenario": "tekYildiz",
+      "plan": "standart",
+      "maps": 1000,
+      "wins": 482,
+      "winRate": 48.2
+    },
+    {
+      "scenario": "tekYildiz",
+      "plan": "guvenli",
+      "maps": 1000,
+      "wins": 479,
+      "winRate": 47.9
+    },
+    {
+      "scenario": "tekYildiz",
+      "plan": "utility",
+      "maps": 1000,
+      "wins": 489,
+      "winRate": 48.9
+    },
+    {
+      "scenario": "tekYildiz",
+      "plan": "yildiz",
+      "maps": 1000,
+      "wins": 509,
+      "winRate": 50.9
+    }
+  ],
+  "maxRoundProbabilityDelta": 0.009374545931409184,
+  "counts": {
+    "liveMaps": 12000,
+    "backgroundMaps": 0,
+    "rounds": 283191
+  }
+}

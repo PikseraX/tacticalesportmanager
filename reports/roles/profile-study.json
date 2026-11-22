@@ -1,0 +1,50 @@
+[
+  {
+    "rol": "Lider",
+    "anaDigerFarki": 16.3,
+    "rolGenAraligi": 15.4,
+    "dogalRolEnIyiYuzde": 94.8
+  },
+  {
+    "rol": "Yıldız",
+    "anaDigerFarki": 16.5,
+    "rolGenAraligi": 15.8,
+    "dogalRolEnIyiYuzde": 98.4
+  },
+  {
+    "rol": "Destek",
+    "anaDigerFarki": 16.3,
+    "rolGenAraligi": 14.5,
+    "dogalRolEnIyiYuzde": 99
+  },
+  {
+    "rol": "Giriş",
+    "anaDigerFarki": 16.2,
+    "rolGenAraligi": 15.1,
+    "dogalRolEnIyiYuzde": 92.4
+  },
+  {
+    "rol": "Sniper",
+    "anaDigerFarki": 16.1,
+    "rolGenAraligi": 14.6,
+    "dogalRolEnIyiYuzde": 95.9
+  },
+  {
+    "rol": "Lurker",
+    "anaDigerFarki": 16.1,
+    "rolGenAraligi": 14.1,
+    "dogalRolEnIyiYuzde": 98.4
+  },
+  {
+    "rol": "Anchor",
+    "anaDigerFarki": 16.1,
+    "rolGenAraligi": 14.3,
+    "dogalRolEnIyiYuzde": 98.5
+  },
+  {
+    "rol": "Taktisyen",
+    "anaDigerFarki": 16.5,
+    "rolGenAraligi": 15.3,
+    "dogalRolEnIyiYuzde": 95.7
+  }
+]
