@@ -67,7 +67,7 @@ function kayitVarMi() {
 }
 
 function kaydet() {
-  if (kayitYukleniyor || sezonKapanisiIsleniyor) return;
+  if (kayitYukleniyor || sezonKapanisiIsleniyor || !kariyer) return false;
   if (typeof macKaydiGuncelle === "function") macKaydiGuncelle();
   try {
     localStorage.setItem(KAYIT_ANAHTARI, JSON.stringify(kariyer));
@@ -178,6 +178,9 @@ async function geriBildirimGonder(event) {
 
 // ---------- Ekranlar ----------
 function anaMenu() {
+  if (typeof macAkisiniTemizle === "function") macAkisiniTemizle();
+  kariyer = null;
+  if (typeof rehberPanelGuncelle === "function") rehberPanelGuncelle();
   let html = '<section class="baslangic-hero"><div class="baslangic-araclar"><div class="baslangic-arma">TEM</div>' + dilButonu() + '</div><p class="baslangic-ust">ESPOR KULÜP YÖNETİMİ</p><h1>Menajer koltuğu<br>seni bekliyor.</h1><p class="baslangic-alt">Kadronu kur. Stratejini belirle. Zirveye tırman.</p></section><h2 class="baslangic-baslik">Ana Menü</h2>';
   if (kayitVarMi()) {
     html += '<button class="buton baslangic-devam" onclick="kayitYukle()">Kariyere Devam Et <span>›</span></button>';

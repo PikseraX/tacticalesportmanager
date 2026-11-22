@@ -81,7 +81,7 @@ function kariyerEkrani() {
   kisilikHazirla();
   rekabetHazirla();
   const sira = benimDunyaSirasi();
-  let html = '<div class="hero">' + kulupKimlikRozeti() + '<h1 style="color:' + kariyer.renk + '">' + oyunAdi(kariyer.takimAdi) + "</h1>";
+  let html = '<div class="hero kariyer-hero">' + kulupKimlikRozeti() + '<h1 style="color:' + kariyer.renk + '">' + oyunAdi(kariyer.takimAdi) + "</h1>";
   html += '<div class="alt">' + LIG_ADLARI[kariyer.ligNo - 1] + " · " + (kariyer.galibiyet || 0) + " galibiyet · " + (kariyer.maglubiyet || 0) + " mağlubiyet</div>";
   html += '<div class="metrikler">' + metrik(para(kariyer.butce), "Bütçe", kariyer.butce < 0) + metrik(para(haftalikGider()), "Haftalık gider") + metrik(sira + ". / 100", "Dünya sırası") + metrik(itibarOf(), "İtibar") + "</div></div>";
   html += '<button class="gelisim-ozet-link" onclick="haftalikOzetEkrani()">Haftalık Özet <span>' + (kariyer.sonHaftaOzeti ? "Hafta " + kariyer.sonHaftaOzeti.hafta : "İlk haftanı tamamla") + ' ›</span></button>';

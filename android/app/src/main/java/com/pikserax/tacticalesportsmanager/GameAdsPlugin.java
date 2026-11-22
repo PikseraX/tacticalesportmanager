@@ -20,9 +20,9 @@ public class GameAdsPlugin extends Plugin {
     private InterstitialAd interstitial;
     private RewardedAd rewarded;
     private boolean rewardedLoading;
-    private long loadedAt, nextLoadAt;
+    private long loadedAt, nextLoadAt, rewardedLoadedAt;
     private boolean initialized, loading, showing;
-    private PluginCall pending;
+    private PluginCall pending, rewardedPending;
     private boolean adsDisabled;
 
     @PluginMethod public void setAdsDisabled(PluginCall call) {
@@ -161,29 +161,32 @@ public class GameAdsPlugin extends Plugin {
         RewardedAd.load(getContext(), BuildConfig.DEBUG ? "ca-app-pub-3940256099942544/5224354917"
             : "ca-app-pub-5635814061302700/1930405519", new AdRequest.Builder().build(),
             new RewardedAdLoadCallback() {
-                @Override public void onAdLoaded(RewardedAd ad) { rewardedLoading = false; rewarded = ad; }
+                @Override public void onAdLoaded(RewardedAd ad) {
+                    rewardedLoading = false; rewarded = ad; rewardedLoadedAt = System.currentTimeMillis();
+                }
                 @Override public void onAdFailedToLoad(LoadAdError error) { rewardedLoading = false; rewarded = null; }
             });
     }
+    private void finishRewarded(boolean earned) {
+        showing = false;
+        if (rewardedPending != null) {
+            JSObject r = new JSObject(); r.put("earned", earned);
+            rewardedPending.resolve(r); rewardedPending = null;
+        }
+        loadRewarded();
+    }
     @PluginMethod public void showRewarded(PluginCall call) {
         getActivity().runOnUiThread(() -> {
-            if (showing || consent == null || !consent.canRequestAds() || rewarded == null || getActivity().isFinishing()) {
-                loadRewarded();
+            if (showing || consent == null || !consent.canRequestAds() || rewarded == null
+                    || System.currentTimeMillis() - rewardedLoadedAt > 55 * 60000L || getActivity().isFinishing()) {
+                if (!showing) { rewarded = null; loadRewarded(); }
                 JSObject r = new JSObject(); r.put("earned", false); call.resolve(r); return;
             }
-            RewardedAd ad = rewarded; rewarded = null; showing = true;
+            RewardedAd ad = rewarded; rewarded = null; showing = true; rewardedPending = call;
             final boolean[] earned = { false };
             ad.setFullScreenContentCallback(new FullScreenContentCallback() {
-                @Override public void onAdDismissedFullScreenContent() {
-                    showing = false;
-                    JSObject r = new JSObject(); r.put("earned", earned[0]); call.resolve(r);
-                    loadRewarded();
-                }
-                @Override public void onAdFailedToShowFullScreenContent(AdError error) {
-                    showing = false;
-                    JSObject r = new JSObject(); r.put("earned", false); call.resolve(r);
-                    loadRewarded();
-                }
+                @Override public void onAdDismissedFullScreenContent() { finishRewarded(earned[0]); }
+                @Override public void onAdFailedToShowFullScreenContent(AdError error) { finishRewarded(false); }
             });
             ad.show(getActivity(), rewardItem -> earned[0] = true);
         });
@@ -201,6 +204,7 @@ public class GameAdsPlugin extends Plugin {
     @Override protected void handleOnDestroy() {
         if (banner != null) banner.destroy();
         if (pending != null) { JSObject r = new JSObject(); r.put("shown", false); pending.resolve(r); pending = null; }
+        if (rewardedPending != null) { JSObject r = new JSObject(); r.put("earned", false); rewardedPending.resolve(r); rewardedPending = null; }
         interstitial = null;
         rewarded = null;
     }

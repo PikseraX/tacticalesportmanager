@@ -49,19 +49,23 @@
   global.odulluMoralButonu = function () {
     const c = global.Capacitor;
     if (!c || c.getPlatform?.() !== "android" || !c.isPluginAvailable?.("GameAds")) return "";
-    if (typeof reklamsiz !== "undefined" && reklamsiz) return "";
     const k = typeof kariyer !== "undefined" ? kariyer : null;
     if (!k || k.sonOdulHafta === k.hafta) return "";
-    return '<button type="button" class="buton ikincil" onclick="odulluMoralIzle()">🎬 Takım Moral Yenile (+10 Moral · Haftada 1)</button>';
+    return '<button type="button" id="odullu-moral-btn" class="buton ikincil" onclick="odulluMoralIzle()">🎬 Takım Moral Yenile (+10 Moral · Haftada 1)</button>';
   };
+  let rewardedBusy = false;
   global.odulluMoralIzle = async function () {
     const c = global.Capacitor;
     const k = typeof kariyer !== "undefined" ? kariyer : null;
-    if (!c || !k || k.sonOdulHafta === k.hafta) return;
-    if (typeof reklamsiz !== "undefined" && reklamsiz) return;
+    if (rewardedBusy || !c || !k || k.sonOdulHafta === k.hafta) return;
+    rewardedBusy = true;
+    const btn = global.document && global.document.getElementById("odullu-moral-btn");
+    if (btn) btn.disabled = true;
     try {
+      if (typeof global.reklamBaslatGerekirse === "function") await global.reklamBaslatGerekirse();
       const res = await c.nativePromise("GameAds", "showRewarded", {});
       if (res && res.earned) {
+        if (typeof kariyer === "undefined" || kariyer !== k) return;
         k.sonOdulHafta = k.hafta;
         const liste = [].concat(k.oyuncular || [], k.yedekler || []);
         liste.forEach(o => {
@@ -74,6 +78,10 @@
         if (typeof kariyerEkrani === "function") kariyerEkrani();
       }
     } catch (_) {}
+    finally {
+      rewardedBusy = false;
+      if (btn && btn.isConnected) btn.disabled = false;
+    }
   };
   if (!global.document) return;
   let storage;
@@ -91,7 +99,7 @@
       || (typeof banDurum !== "undefined" && banDurum !== null);
   }
   function blocked() {
-    return !native || !ready || (typeof reklamsiz !== "undefined" && reklamsiz) || !!document.getElementById("reklamsiz-magaza") || !!document.getElementById("kimlik-studyosu") || (typeof kimlikMagazaMesgul !== "undefined" && kimlikMagazaMesgul) || document.hidden || matchActive() || !!document.getElementById("feedback-screen") || !!document.getElementById("rehber-panel")
+    return !native || !ready || rewardedBusy || (typeof reklamsiz !== "undefined" && reklamsiz) || !!document.getElementById("reklamsiz-magaza") || !!document.getElementById("kimlik-studyosu") || (typeof kimlikMagazaMesgul !== "undefined" && kimlikMagazaMesgul) || document.hidden || matchActive() || !!document.getElementById("feedback-screen") || !!document.getElementById("rehber-panel")
       || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "");
   }
   function openBreak() {
@@ -117,11 +125,12 @@
   });
   global.reklamMacTamamlandi = function () { policy.completed(); void scheduler.tick(true); };
   if (typeof reklamsizArkaPlanKontrolu === "function") void reklamsizArkaPlanKontrolu();
-  let initStarted = false;
+  let initPromise = null;
   function ensureInitialized() {
-    if (!native || initStarted || (typeof reklamsiz !== "undefined" && reklamsiz)) return Promise.resolve();
-    initStarted = true;
-    return cap.nativePromise("GameAds", "setAdsDisabled", { disabled: false })
+    if (!native) return Promise.resolve();
+    if (initPromise) return initPromise;
+    const disabled = typeof reklamsiz !== "undefined" && Boolean(reklamsiz);
+    initPromise = cap.nativePromise("GameAds", "setAdsDisabled", { disabled })
       .then(() => call("initialize")).then(result => {
       if (!result) return;
       ready = true;
@@ -138,16 +147,12 @@
         document.body.appendChild(button);
       }
       void scheduler.tick();
-    }).catch(() => { initStarted = false; });
+    }).catch(() => { initPromise = null; });
+    return initPromise;
   }
   global.reklamBaslatGerekirse = ensureInitialized;
   if (native) {
-    const adFreeInit = typeof reklamsiz !== "undefined" && reklamsiz;
-    if (adFreeInit) {
-      cap.nativePromise("GameAds", "setAdsDisabled", { disabled: true }).catch(() => {});
-    } else {
-      void ensureInitialized();
-    }
+    void ensureInitialized();
     setInterval(() => { void scheduler.tick(); }, 1000);
     document.addEventListener("visibilitychange", () => { if (!document.hidden) void scheduler.tick(); });
   }

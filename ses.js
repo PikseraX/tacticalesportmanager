@@ -112,9 +112,16 @@
       return true;
     }
     const anaHero = global.document.querySelector(".baslangic-hero");
-    if (!anaHero && typeof global.anaMenu === "function") {
-      global.anaMenu();
-      return true;
+    if (!anaHero) {
+      const kariyerHub = global.document.querySelector(".kariyer-hero");
+      if (!kariyerHub && typeof kariyer !== "undefined" && kariyer && typeof global.kariyerEkrani === "function") {
+        global.kariyerEkrani();
+        return true;
+      }
+      if (typeof global.anaMenu === "function") {
+        global.anaMenu();
+        return true;
+      }
     }
     return false;
   }
@@ -129,6 +136,8 @@
     global.document.addEventListener("visibilitychange", () => {
       if (global.document.hidden && audioCtx && audioCtx.state === "running") {
         audioCtx.suspend().catch(() => {});
+      } else if (!global.document.hidden && sesAcik && audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume().catch(() => {});
       }
     });
   }
