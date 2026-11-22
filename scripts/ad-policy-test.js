@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { createPolicy, createScheduler } = require('../reklam.js');
-const WAIT = 3*60*1000;
+const WAIT = 5*60*1000;
 function fixture(initial) {
   let time=1000;
   const memory=new Map(initial ? [['tem_reklam_siklik_v1',JSON.stringify(initial)]] : []);
@@ -21,8 +21,8 @@ async function run() {
   p.shown(f.now());
 
   for(let i=0;i<3;i++) p.completed();
-  f.advance(WAIT-1); assert.equal(p.eligible(),false,'3 maç erken bitince 3 dakika bekler');
-  f.advance(1); assert.equal(p.eligible(),true,'3. dakikada uygun olur');
+  f.advance(WAIT-1); assert.equal(p.eligible(),false,'3 maç erken bitince 5 dakika bekler');
+  f.advance(1); assert.equal(p.eligible(),true,'5. dakikada uygun olur');
   p=createPolicy(f.storage,f.now); assert.equal(p.eligible(),true,'yeniden açılışta korunur');
   p.shown(f.now()); f.advance(WAIT);
   for(let i=0;i<2;i++) p.completed();
@@ -64,6 +64,6 @@ async function run() {
   await x.scheduler.tick(true);assert.equal(x.stats().prepares,3,'maç bitişi önceki hazır kontrolü beklemesini aşar');
   x=setup({fail:true});tick=x.scheduler.tick();await Promise.resolve();x.release();await tick;
   assert.equal(x.stats().cleanups,1,'hata molayı kaldırır');assert.equal(x.policy.eligible(),true);
-  console.log('İlk 2 maç koruma, sonraki 3 maç + 3 dk, kayıt, otomatik tetikleme, maç/arka plan engeli, mola ve hata testleri geçti.');
+  console.log('İlk 2 maç koruma, sonraki 3 maç + 5 dk, kayıt, otomatik tetikleme, maç/arka plan engeli, mola ve hata testleri geçti.');
 }
 run().catch(e=>{console.error(e);process.exitCode=1});

@@ -99,7 +99,10 @@ function kariyerEkrani() {
   html += '<button class="buton ikincil" onclick="anaMenu()">Ana Menü</button>';
   html += '<button class="buton ikincil" onclick="rehberMenu()">Rehber</button>';
   html += reklamsizMagazaButonu();
+  html += (typeof odulluMoralButonu === "function" ? odulluMoralButonu() : "");
+  html += (typeof sesAyarButonlari === "function" ? sesAyarButonlari() : "");
   html += geriBildirimButonu();
+  html += gizlilikPolitikasiButonu();
   uygulama.innerHTML = html;
 }
 

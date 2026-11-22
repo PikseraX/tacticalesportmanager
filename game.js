@@ -111,6 +111,9 @@ function para(sayi) {
 function geriBildirimButonu() {
   return '<button class="feedback-button" type="button" onclick="geriBildirimAc()"><span class="feedback-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/><path d="M8 11h8m-8 4h5"/></svg></span><span class="feedback-label">Geri bildirim<small>Fikirlerini ve sorunları bizimle paylaş</small></span><span class="feedback-arrow" aria-hidden="true">↗</span></button>';
 }
+function gizlilikPolitikasiButonu() {
+  return '<button id="gizlilik-politikasi-btn" class="buton ikincil" type="button" onclick="location.href=\'gizlilik.html\'">🔒 Gizlilik Politikası / Privacy Policy</button>';
+}
 const GERI_BILDIRIM_IKONLARI = {"Beğendim":"<svg viewBox=\"0 0 48 48\" aria-hidden=\"true\"><path d=\"m7 37 10-10 4 4-10 10-4-4Z\" fill=\"currentColor\" fill-opacity=\".25\"/><path d=\"m17 27 5-5m-4-3 11-9 12-4-4 12-12 10-7-9Z\" fill=\"currentColor\" fill-opacity=\".12\"/><path d=\"m22 22 15-12M14 24l10 10M10 35l3 3\"/></svg>","Öneri":"<svg viewBox=\"0 0 48 48\" aria-hidden=\"true\"><path d=\"m4 29 2-12 3-2 2 7 1-11 3-1 1 12 2-10 3 1-1 13 3-5 3 2-5 11-2 5H8l-4-10Z\" fill=\"currentColor\" fill-opacity=\".14\"/><path d=\"m26 34-2-11 3-2 3 5-1-13 3-1 2 10 1-12 3 1 1 11 2-7 3 2 1 12-4 10H28l-2-5Z\" fill=\"currentColor\" fill-opacity=\".14\"/><path d=\"M8 33h11M29 33h12M9 26h8m14 0h8M9 39v4h10v-4m10 0v4h12v-4\"/></svg>","Hata bildir":"<svg viewBox=\"0 0 48 48\" aria-hidden=\"true\"><rect x=\"10\" y=\"14\" width=\"28\" height=\"29\" rx=\"4\" fill=\"currentColor\" fill-opacity=\".14\"/><path d=\"M17 14V8c0-5 14-5 14 0v6M21 14V9m7 5V9\"/><rect x=\"15\" y=\"19\" width=\"18\" height=\"7\" rx=\"1\"/><path d=\"M16 31h2m5 0h2m5 0h2m-16 5h2m5 0h2m5 0h2M19 22h10\"/></svg>"};
 let geriBildirimTaslak = { kategori: "Beğendim", mesaj: "" };
 let geriBildirimDonus = null;
@@ -187,7 +190,9 @@ function anaMenu() {
   html += '<button class="buton ikincil" onclick="kadroEditoru()">Kadro Editörü</button>';
 
   html += reklamsizMagazaButonu();
+  html += (typeof sesAyarButonlari === "function" ? sesAyarButonlari() : "");
   html += geriBildirimButonu();
+  html += gizlilikPolitikasiButonu();
   uygulama.innerHTML = html;
 }
 

@@ -9,6 +9,7 @@ import com.getcapacitor.*;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.google.android.gms.ads.*;
 import com.google.android.gms.ads.interstitial.*;
+import com.google.android.gms.ads.rewarded.*;
 import com.google.android.ump.*;
 
 @CapacitorPlugin(name = "GameAds")
@@ -17,6 +18,8 @@ public class GameAdsPlugin extends Plugin {
     private AdView banner;
     private FrameLayout slot;
     private InterstitialAd interstitial;
+    private RewardedAd rewarded;
+    private boolean rewardedLoading;
     private long loadedAt, nextLoadAt;
     private boolean initialized, loading, showing;
     private PluginCall pending;
@@ -59,11 +62,12 @@ public class GameAdsPlugin extends Plugin {
         });
     }
     private void startAds() {
-        if (adsDisabled || consent == null || !consent.canRequestAds() || initialized) return;
+        if (consent == null || !consent.canRequestAds() || initialized) return;
         initialized = true;
         MobileAds.initialize(getContext(), result -> getActivity().runOnUiThread(() -> {
             if (getActivity().isFinishing()) return;
-            createBanner(); loadInterstitial();
+            loadRewarded();
+            if (!adsDisabled) { createBanner(); loadInterstitial(); }
         }));
     }
     private void createBanner() {
@@ -151,10 +155,44 @@ public class GameAdsPlugin extends Plugin {
         }
         loadInterstitial();
     }
+    private void loadRewarded() {
+        if (rewardedLoading || rewarded != null || consent == null || !consent.canRequestAds()) return;
+        rewardedLoading = true;
+        RewardedAd.load(getContext(), BuildConfig.DEBUG ? "ca-app-pub-3940256099942544/5224354917"
+            : "ca-app-pub-5635814061302700/1930405519", new AdRequest.Builder().build(),
+            new RewardedAdLoadCallback() {
+                @Override public void onAdLoaded(RewardedAd ad) { rewardedLoading = false; rewarded = ad; }
+                @Override public void onAdFailedToLoad(LoadAdError error) { rewardedLoading = false; rewarded = null; }
+            });
+    }
+    @PluginMethod public void showRewarded(PluginCall call) {
+        getActivity().runOnUiThread(() -> {
+            if (showing || consent == null || !consent.canRequestAds() || rewarded == null || getActivity().isFinishing()) {
+                loadRewarded();
+                JSObject r = new JSObject(); r.put("earned", false); call.resolve(r); return;
+            }
+            RewardedAd ad = rewarded; rewarded = null; showing = true;
+            final boolean[] earned = { false };
+            ad.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override public void onAdDismissedFullScreenContent() {
+                    showing = false;
+                    JSObject r = new JSObject(); r.put("earned", earned[0]); call.resolve(r);
+                    loadRewarded();
+                }
+                @Override public void onAdFailedToShowFullScreenContent(AdError error) {
+                    showing = false;
+                    JSObject r = new JSObject(); r.put("earned", false); call.resolve(r);
+                    loadRewarded();
+                }
+            });
+            ad.show(getActivity(), rewardItem -> earned[0] = true);
+        });
+    }
     @PluginMethod public void privacyOptions(PluginCall call) {
         getActivity().runOnUiThread(() -> UserMessagingPlatform.showPrivacyOptionsForm(getActivity(), error -> {
-            if (banner != null) { banner.destroy(); banner = null; slot.setVisibility(View.GONE); }
-            interstitial = null; initialized = false;
+            if (banner != null) { banner.destroy(); banner = null; }
+            if (slot != null) { slot.setVisibility(View.GONE); }
+            interstitial = null; rewarded = null; initialized = false;
             startAds(); call.resolve(status());
         }));
     }
@@ -164,5 +202,6 @@ public class GameAdsPlugin extends Plugin {
         if (banner != null) banner.destroy();
         if (pending != null) { JSObject r = new JSObject(); r.put("shown", false); pending.resolve(r); pending = null; }
         interstitial = null;
+        rewarded = null;
     }
 }

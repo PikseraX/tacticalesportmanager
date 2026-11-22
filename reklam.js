@@ -1,7 +1,7 @@
-// İlk 2 maç geçiş reklamı yok. Sonrası: en az 3 maç VE son geçiş reklamından en az 3 dakika.
+// İlk 2 maç geçiş reklamı yok. Sonrası: en az 3 maç VE son geçiş reklamından en az 5 dakika (İki Kalp, Bir Deste ile eşit).
 (function (global) {
   "use strict";
-  const KEY = "tem_reklam_siklik_v1", WAIT = 3 * 60 * 1000, ONBOARDING_FREE = 2, MIN_MATCHES = 3;
+  const KEY = "tem_reklam_siklik_v1", WAIT = 5 * 60 * 1000, ONBOARDING_FREE = 2, MIN_MATCHES = 3;
   function createPolicy(storage, now) {
     let state;
     try { state = JSON.parse(storage.getItem(KEY)); } catch (_) {}
@@ -46,6 +46,35 @@
     return { tick };
   }
   if (typeof module !== "undefined" && module.exports) module.exports = { createPolicy, createScheduler };
+  global.odulluMoralButonu = function () {
+    const c = global.Capacitor;
+    if (!c || c.getPlatform?.() !== "android" || !c.isPluginAvailable?.("GameAds")) return "";
+    if (typeof reklamsiz !== "undefined" && reklamsiz) return "";
+    const k = typeof kariyer !== "undefined" ? kariyer : null;
+    if (!k || k.sonOdulHafta === k.hafta) return "";
+    return '<button type="button" class="buton ikincil" onclick="odulluMoralIzle()">🎬 Takım Moral Yenile (+10 Moral · Haftada 1)</button>';
+  };
+  global.odulluMoralIzle = async function () {
+    const c = global.Capacitor;
+    const k = typeof kariyer !== "undefined" ? kariyer : null;
+    if (!c || !k || k.sonOdulHafta === k.hafta) return;
+    if (typeof reklamsiz !== "undefined" && reklamsiz) return;
+    try {
+      const res = await c.nativePromise("GameAds", "showRewarded", {});
+      if (res && res.earned) {
+        k.sonOdulHafta = k.hafta;
+        const liste = [].concat(k.oyuncular || [], k.yedekler || []);
+        liste.forEach(o => {
+          if (!o) return;
+          const mevcut = typeof moralOf === "function" ? moralOf(o) : (o.mor === undefined ? 70 : o.mor);
+          o.mor = typeof sinir100 === "function" ? sinir100(mevcut + 10) : Math.min(100, mevcut + 10);
+        });
+        if (typeof kaydet === "function") kaydet();
+        if (typeof global.temSesCal === "function") global.temSesCal("win");
+        if (typeof kariyerEkrani === "function") kariyerEkrani();
+      }
+    } catch (_) {}
+  };
   if (!global.document) return;
   let storage;
   try { storage = global.localStorage; } catch (_) { storage = { getItem() {}, setItem() {} }; }

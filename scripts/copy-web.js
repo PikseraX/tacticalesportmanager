@@ -4,7 +4,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'www');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const assets = new Set(['index.html']);
+const assets = new Set(['index.html', 'gizlilik.html']);
 
 for (const match of html.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["']([^"']+)["'][^>]*>/gi)) {
   const asset = match[1];

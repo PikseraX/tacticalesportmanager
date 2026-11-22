@@ -8,7 +8,7 @@ async function test() {
   let purchases = [];
   let fail = false;
   const ctx = vm.createContext({
-    document: { addEventListener() {} },
+    document: { addEventListener() {}, querySelectorAll: () => [] },
     localStorage: { getItem: k => cache.get(k), setItem: (k, v) => cache.set(k, v) },
     window: { Capacitor: {
       isPluginAvailable: () => true,
